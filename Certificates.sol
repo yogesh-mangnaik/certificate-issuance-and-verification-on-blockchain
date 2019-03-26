@@ -10,6 +10,10 @@ contract Certificates{
         _;
     }
     
+    constructor() public{
+        owner = msg.sender;
+    }
+    
     function publish(uint year, bytes32 root) public onlyOwner{
         certificates[year] = root;
     }
