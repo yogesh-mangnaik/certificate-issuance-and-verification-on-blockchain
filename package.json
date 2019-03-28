@@ -1,0 +1,22 @@
+{
+  "name": "certificate_issuance_and_verification_on_blockchain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yogesh-mangnaik/Certificate_Issuance_And_Verification_On_Blockchain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yogesh-mangnaik/Certificate_Issuance_And_Verification_On_Blockchain/issues"
+  },
+  "homepage": "https://github.com/yogesh-mangnaik/Certificate_Issuance_And_Verification_On_Blockchain#readme",
+  "dependencies": {
+    "web3": "^0.20.0"
+  }
+}
