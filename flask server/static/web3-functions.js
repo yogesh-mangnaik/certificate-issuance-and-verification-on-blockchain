@@ -1,6 +1,5 @@
 if (typeof web3 !== 'undefined') {
 	web3 = new Web3(web3.currentProvider);
-	alert("Injected Web3");
 } else {
     // set the provider you want from Web3.providers
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
@@ -70,8 +69,16 @@ var contractInstance = web3.eth.contract([
 	"type": "function"
 }
 ]);
-var contract = contractInstance.at('0xceba2a05789e75d3f53098b777fea6ee7daa2982');
+var contract = contractInstance.at('0x9a7823239aac0191c6f46aea2cc871ae984ea40e');
 
-function publishHash(){
-
+function publishHash(hash, year){
+	console.log("Publishing Hash");
+	contract.publish(year, hash,function(error, result){
+		if(!error){
+			console.log(result);
+		}
+		else{
+			console.log(error);
+		}
+	});
 }

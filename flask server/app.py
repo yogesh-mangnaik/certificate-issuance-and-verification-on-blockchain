@@ -1,13 +1,18 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask import request
 import hashlib
 import json
 
 app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 @app.route("/")
 def home():
-    return "Hello, World!"
+    return render_template("index.html")
+
+@app.route("/publish")
+def publish():
+	return render_template("publish.html")
 
 @app.route("/query")
 def hash():

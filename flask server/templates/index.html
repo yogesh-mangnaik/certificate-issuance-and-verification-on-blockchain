@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Certificate Issuance</title>
+
+	<script src="static/node_modules/web3/dist/web3.min.js"></script>
+	<script type="static/web3_functions.js"></script>
+</head>
+<body>
+	<script>
+		if (typeof web3 !== 'undefined') {
+			web3 = new Web3(web3.currentProvider);
+			document.write("Injected Web3");
+		} else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+            document.write("New Web3");
+        }
+
+        var contractInstance = web3.eth.contract([
+        {
+        	"constant": false,
+        	"inputs": [
+        	{
+        		"name": "year",
+        		"type": "uint256"
+        	},
+        	{
+        		"name": "root",
+        		"type": "bytes32"
+        	}
+        	],
+        	"name": "publish",
+        	"outputs": [],
+        	"payable": false,
+        	"stateMutability": "nonpayable",
+        	"type": "function"
+        },
+        {
+        	"inputs": [
+        	{
+        		"name": "token",
+        		"type": "address"
+        	}
+        	],
+        	"payable": true,
+        	"stateMutability": "payable",
+        	"type": "constructor"
+        },
+        {
+        	"constant": true,
+        	"inputs": [
+        	{
+        		"name": "",
+        		"type": "uint256"
+        	}
+        	],
+        	"name": "certificates",
+        	"outputs": [
+        	{
+        		"name": "",
+        		"type": "bytes32"
+        	}
+        	],
+        	"payable": false,
+        	"stateMutability": "view",
+        	"type": "function"
+        },
+        {
+        	"constant": true,
+        	"inputs": [],
+        	"name": "tokenContract",
+        	"outputs": [
+        	{
+        		"name": "",
+        		"type": "address"
+        	}
+        	],
+        	"payable": false,
+        	"stateMutability": "view",
+        	"type": "function"
+        }
+        ]);
+        var contract = contractInstance.at('0xceba2a05789e75d3f53098b777fea6ee7daa2982');
+        document.write("Contract Created");
+
+        function showMessage(){
+        	contract.publish(2019, "0xA9d930A901E9d0E6d23bde357684c42DCEAc8297",function(error, result){
+        		if(!error){
+        			console.log(result);
+        		}
+        		else{
+        			console.log(error);
+        		}
+        	});
+        }
+    </script>
+
+    <div>
+    	<input type="button" name="b" value="Hello"  onclick="showMessage();">
+    	<input type="button" name="b" value="Hello 2"  onclick="getHash();">
+    </div>
+</body>
+</html>

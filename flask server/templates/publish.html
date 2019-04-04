@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="static/web3-functions.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="static/publish.css">
+
+	<script type="text/javascript">
+		function abc(a,b){
+			document.write(a);
+			document.write(b);
+		}
+	</script>
+</head>
+<body>
+	<div class="login-page">
+		<div class="form">
+			<input type="text" name="hash" id="hash" placeholder="Certificate Hash"/>
+			<input type="text" name="year" id="year" placeholder="Year"/>
+			<button id="but">Publish</button>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$('#but').click(function(){
+			console.log("In publish function");
+			var hash = $('#hash').val();
+			var year = $('#year').val();
+			publishHash(hash, year);
+		});	
+
+		function show(){
+			console.log("Hellow");
+
+		}
+	</script>
+
+</body>
+</html>
