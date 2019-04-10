@@ -56,7 +56,7 @@ contract Certificates is usingOraclize {
            emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
            emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-           string memory url = strConcat("json(http://cd92fe10.ngrok.io/query?hash=", hash, ").value");
+           string memory url = strConcat("json(http://5e7ea1cf.ngrok.io/query?hash=", hash, ").value");
            bytes32 id = oraclize_query("URL", url);
            requests[id] = Request(merklepath, year, certificates[year]);
            savedPath = merklepath;
@@ -75,17 +75,15 @@ contract Certificates is usingOraclize {
             revert();
         bytes32 hash = keccak256(result);
         calculatedHash = hash;
-        //savedPath = requests[myid].merklepath;
+        savedPath = requests[myid].merklepath;
         year = requests[myid].year;
-        //storedRoot = certificates[year];
-        //verify(savedPath, storedRoot, calculatedHash);
-        /*    //TODO: The certificate has been verified. Emit an event to let the client know.
-            verified = 1;
+        storedRoot = certificates[year];
+        if(verify(savedPath, storedRoot, calculatedHash)){
+            verify2 = 1;
         }
         else{
-            //TODO: The certificate is fake. Emit an event to let the client know
-            verified = 2;
-        }*/
+            verify2 = 2;
+        }
     }
     
     function hash(bytes32 h) public pure returns (bytes32){
@@ -105,7 +103,6 @@ contract Certificates is usingOraclize {
             }
         }
         // Check if the computed hash (root) is equal to the provided root
-        //finalHash = computedHash;
         return computedHash == root;
     }
 }
