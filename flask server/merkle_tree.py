@@ -5,11 +5,12 @@ from collections import deque
 import time
 
 class TreeNode(object):
-	def __init__(self, left, right, level, value, root = None):
+	def __init__(self, left, right, level, value):
 		self.left = left
 		self.right = right
 		self.level = level
 		self.value = value
+		self.nodehash = None
 		self.merklePath = []
 
 	def __str__(self):
@@ -34,6 +35,10 @@ class MerkleTree(object):
 
 	def getLeafHash(self, index):
 		if(index < len(self.nodeList)):
+			return self.nodeList[index].nodehash
+
+	def getEncryptedLeafHash(self, index):
+		if(index < len(self.nodeList)):
 			return self.nodeList[index].value
 
 	def printTree(self, node):
@@ -47,7 +52,9 @@ class MerkleTree(object):
 
 	def add(self,certificate):
 		certhash = self.getHash(certificate)
-		tempNode = TreeNode(None, None, 0, certhash)
+		encryptedCertHash = self.getEncryptedHash(certhash)
+		tempNode = TreeNode(None, None, 0, encryptedCertHash)
+		tempNode.nodehash = certhash
 		self.nodeList.append(tempNode)
 		self.nodeQueue.appendleft(tempNode)
 
@@ -70,7 +77,8 @@ class MerkleTree(object):
 		self.root = self.nodeQueue.pop()
 		return self.root
 
-
+	# Function for updating the merkle path of the leaf nodes
+	# whenever a intermediate node is formed
 	def updatePath(self, node, merkleValue):
 		if(node.left == None and node.right == None):
 			node.merklePath.append(merkleValue)
@@ -93,4 +101,8 @@ class MerkleTree(object):
 	def getHash(self, certificate):
 		return Web3.soliditySha3(['string'], [certificate])
 
-tree = MerkleTree()
+	def getEncryptedHash(self, certificateHash):
+		privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
+		encr = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [certificateHash, privateKey]))
+		encryptedHash = Web3.soliditySha3(['string'], [encr])
+		return encryptedHash

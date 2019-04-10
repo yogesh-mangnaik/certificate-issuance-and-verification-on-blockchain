@@ -1,41 +1,181 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title></title>
-	<script type="text/javascript" src="static/web3-functions.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<title>Certificate Issuance and Verification</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
 
-	<link rel="stylesheet" type="text/css" href="static/publish.css">
+body {
+  margin: 0;
+}
 
-	<script type="text/javascript">
-		function abc(a,b){
-			document.write(a);
-			document.write(b);
-		}
-	</script>
+/* Style the header */
+.header {
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Style the top navigation bar */
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+/* Style the topnav links */
+.topnav a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change color on hover */
+
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 25%;
+  padding: 15px;
+  vertical-align: middle;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+  vertical-align: middle;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width:600px) {
+  .column {
+    width: 100%;
+  }
+}
+
+
+
+
+input[type=file] {
+  cursor: pointer;
+  width: 180px;
+  height: 34px;
+  overflow: hidden;
+}
+
+input[type=file]:before {
+  width: 158px;
+  height: 32px;
+  font-size: 16px;
+  line-height: 32px;
+  content: 'Upload File';
+  display: inline-block;
+  background: white;
+  border: 1px solid #000;
+  padding: 0 10px;
+  text-align: center;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+input[type=file]::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+
+input[type=text] {
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 3px solid #ccc;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  outline: none;
+}
+
+input[type=text]:focus {
+  border: 3px solid #555;
+}
+
+
+
+
+
+
+
+
+
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.button5 {
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+}
+
+.button5:hover {
+  background-color: #555555;
+  color: white;
+}
+
+
+
+</style>
 </head>
 <body>
-	<div class="login-page">
-		<div class="form">
-			<input type="text" name="hash" id="hash" placeholder="Certificate Hash"/>
-			<input type="text" name="year" id="year" placeholder="Year"/>
-			<button id="but">Publish</button>
-		</div>
-	</div>
 
-	<script type="text/javascript">
-		$('#but').click(function(){
-			console.log("In publish function");
-			var hash = $('#hash').val();
-			var year = $('#year').val();
-			publishHash(hash, year);
-		});	
+<div class="header">
+  <h1>Certificate Issuance and Verification</h1>
+  <p>A Blockchain based system to issue certificates digitally and verify them.</p>
+</div>
 
-		function show(){
-			console.log("Hellow");
+<div class="topnav">
+  <a href="#"></a>
+</div>
 
-		}
-	</script>
+<div class="row">
+  <div class="column">
+    <center><p><input type="file" name="file" /></p></center>
+    
+  </div>
+  
+  <div class="column">
+    <center><h2>Enter the year</h2>
+    <input type = "text" name = "year" />
+    </center>
+  </div>
+  
+  <div class="column">
+    <center><button class="button button5" type="submit">Create Certificate</button></center>
+  </div>
+
+   <div class="column">
+    <center><button class="button button5" type="submit">Publish
+    Root on Blockchain</button></center>
+  </div>
+</div>
 
 </body>
-</html>
+</html>	

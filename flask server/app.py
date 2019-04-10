@@ -26,10 +26,9 @@ def upload_file():
     if request.method == 'POST':
     	f = request.files['file']
     	f.save(secure_filename("student_data.csv"))
-    	filedata = pd.read_csv('data.csv')
+    	filedata = pd.read_csv('student_data.csv')
     	tree = MerkleTree()
     	columns = list(filedata.columns)
-    	returndata = ""
     	for i in range(len(filedata)):
     		data = {}
     		for j in range(len(columns)):
@@ -38,14 +37,14 @@ def upload_file():
     		json_data = json.dumps(data)
     		tree.add(json_data)
     	tree.createTree()
-
+    	Utils.writeToFile("root.txt", Web3.toHex(tree.getMerkleRoot().value))
     	# generate the certificate json with hash and merklepath in header
     	# and data in certificate
-    	
     	for i in range(len(filedata)):
     		data = {}
     		header = {}
     		header['hash'] = Web3.toHex(tree.getLeafHash(i))
+    		header['enchash'] = Web3.toHex(tree.getEncryptedLeafHash(i))
     		path = []
     		for x in range(len(tree.getMerklePath(i))):
     			path.append(Web3.toHex(tree.getMerklePath(i)[x]))
@@ -53,20 +52,13 @@ def upload_file():
     		data['header'] = header
     		certificateData = {}
     		for j in range(len(columns)):
-    			s = filedata[columns[j]][i]
-    			certificateData[columns[j]] = str(s)
+    			certificateData[columns[j]] = str(filedata[columns[j]][i])
     		data['certificate'] = certificateData
     		json_data = json.dumps(data)
-    		print(json_data)
     		Utils.writeToFile(certificateData['ID'] + ".txt", json_data)
-    		returndata += json_data + "\n"
-    	return returndata
+    	return "Successful"
     else:
     	return "No File Selected"
-
-@app.route("/")
-def home():
-    return render_template("index.html")
 
 @app.route("/upload")
 def upload():
@@ -79,11 +71,23 @@ def publish():
 @app.route("/query")
 def hash():
 	normalhash = request.args.get('hash')
-	x = hashlib.sha256(str(normalhash).encode('utf-8')).hexdigest()
+	privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
+	x = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [normalhash, privateKey]))
+	#y = Web3.toHex(Web3.soliditySha3(['bytes32'], [x]))
 	data = {}
-	data['value'] = x
+	data['value'] = str(x)
 	json_data = json.dumps(data)
-	print(request.environ['REMOTE_ADDR'])
+	return json_data
+
+@app.route("/equery")
+def encrypthash():
+	normalhash = request.args.get('hash')
+	privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
+	x = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [normalhash, privateKey]))
+	y = Web3.toHex(Web3.soliditySha3(['string'], [x]))
+	data = {}
+	data['value'] = str(y)
+	json_data = json.dumps(data)
 	return json_data
 
 @app.route("/data")
