@@ -3,33 +3,27 @@ pragma solidity >=0.4.22 <0.6.0;
 import "./MyToken.sol";
 import "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.25.sol";
 
-contract Certificates is usingOraclize {
-    
-    struct Request{
-        bytes32[] merklepath;
-        uint256 year;
-        bytes32 certificateHash;
-    }
+contract X is usingOraclize {
     
     //test variables
+    bytes32 public lastid;
     bytes32[] public savedPath;
+    uint256 public reqyear;
+    bytes32 public savedRoot;
     bytes32 public calculatedHash;
-    bytes32 public finalHash;
-    uint256 public year;
-    bytes32 public storedRoot;
+    uint256 public length;
     uint256 public verify1 = 0;
-    uint256 public verify2 = 0;
-    
-    uint public verified = 0;
     
     mapping (uint256 => bytes32) public certificates;
-    mapping (bytes32 => Request) public requests;
+    mapping (bytes32 => bytes32[]) public requestPath;
+    mapping (bytes32 => uint256) public requestYear;
+    mapping (bytes32 => bytes32) public requestHash;
+    
     address owner;
     MyToken public tokenContract;
     uint256 verificationFee = 30;
     uint decimals = 18;
     
-    event LogConstructorInitiated(string nextStep);
     event LogNewOraclizeQuery(string description);
     
     /*To be used to set accessiblity of function so that
@@ -51,43 +45,43 @@ contract Certificates is usingOraclize {
             certificates[year] = root;
     }
     
-    function verify(bytes32[] memory merklepath, string hash, uint256 year, bytes32 ehash) public returns (bytes32){
+    function verify(bytes32[] memory merklepath, string hash, uint256 year) public returns (bytes32){
         if (oraclize_getPrice("URL") > address(this).balance) {
            emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-           string memory url = strConcat("json(http://5e7ea1cf.ngrok.io/query?hash=", hash, ").value");
-           bytes32 id = oraclize_query("URL", url);
-           requests[id] = Request(merklepath, year, certificates[year]);
-           savedPath = merklepath;
-           if(verify(requests[id].merklepath, certificates[year], ehash)){
-               verify1 = 1;
-           }
-           else{
-               verify1 = 2;
-           }
-           return id;
-       }
+            //oraclize_setCustomGasPrice(400000000000000);
+            emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            string memory url = strConcat("json(http://0581a2b4.ngrok.io/query?hash=", hash, ").value");
+            bytes32 id = oraclize_query("URL", url);
+            lastid = id;
+            requestYear[id] = year;
+            requestHash[id] = certificates[year];
+            for(uint256 i=0; i<merklepath.length; i++){
+                requestPath[id].push(merklepath[i]);
+            }
+            return id;
+        }
     }
     
+    //callback function - called when oraclize query returns with some data
     function __callback(bytes32 myid, string result) public{
-        if (msg.sender != oraclize_cbAddress()) 
-            revert();
+        /*if (msg.sender != oraclize_cbAddress())
+            revert();*/
         bytes32 hash = keccak256(result);
         calculatedHash = hash;
-        savedPath = requests[myid].merklepath;
-        year = requests[myid].year;
-        storedRoot = certificates[year];
-        if(verify(savedPath, storedRoot, calculatedHash)){
-            verify2 = 1;
+        /*for(uint256 i=0; i<1; i++){
+            savedPath.push(requestPath[myid][i]);
+        }*/
+        length = requestPath[myid].length;
+        //savedPath = requestPath[myid];
+        savedRoot = requestHash[myid];
+        reqyear = requestYear[myid];
+        if(verify(requestPath[myid], certificates[reqyear], calculatedHash)){
+            verify1 = 1;
         }
         else{
-            verify2 = 2;
+            verify1 = 2;
         }
-    }
-    
-    function hash(bytes32 h) public pure returns (bytes32){
-        return keccak256(h);
     }
     
     function verify(bytes32[] memory proof, bytes32 root, bytes32 leaf) public pure returns (bool) {
