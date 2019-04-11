@@ -3,13 +3,10 @@ pragma solidity >=0.4.22 <0.6.0;
 import "./MyToken.sol";
 import "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.25.sol";
 
-contract X is usingOraclize {
+contract Certificates is usingOraclize {
     
     //test variables
     bytes32 public lastid;
-    bytes32[] public savedPath;
-    uint256 public reqyear;
-    bytes32 public savedRoot;
     bytes32 public calculatedHash;
     uint256 public length;
     uint256 public verify1 = 0;
@@ -25,6 +22,9 @@ contract X is usingOraclize {
     uint decimals = 18;
     
     event LogNewOraclizeQuery(string description);
+    event VerificationResult(bytes32 requestID, bool verificationStatus);
+    event VerificationRequest(bytes32 requestID);
+    event PublishStatus(bytes32 root);
     
     /*To be used to set accessiblity of function so that
       only the deployer of the contract can call it*/
@@ -43,15 +43,15 @@ contract X is usingOraclize {
     function publish(uint year, bytes32 root) public onlyOwner{
         if(certificates[year] == 0x0)
             certificates[year] = root;
+            emit PublishStatus(root);
     }
     
     function verify(bytes32[] memory merklepath, string hash, uint256 year) public returns (bytes32){
         if (oraclize_getPrice("URL") > address(this).balance) {
            emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-            //oraclize_setCustomGasPrice(400000000000000);
             emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            string memory url = strConcat("json(http://0581a2b4.ngrok.io/query?hash=", hash, ").value");
+            string memory url = strConcat("json(http://fbd81523.ngrok.io/query?hash=", hash, ").value");
             bytes32 id = oraclize_query("URL", url);
             lastid = id;
             requestYear[id] = year;
@@ -59,32 +59,31 @@ contract X is usingOraclize {
             for(uint256 i=0; i<merklepath.length; i++){
                 requestPath[id].push(merklepath[i]);
             }
+            emit VerificationRequest(id);
             return id;
         }
     }
     
     //callback function - called when oraclize query returns with some data
     function __callback(bytes32 myid, string result) public{
-        /*if (msg.sender != oraclize_cbAddress())
-            revert();*/
+        if (msg.sender != oraclize_cbAddress())
+            revert();
         bytes32 hash = keccak256(result);
         calculatedHash = hash;
-        /*for(uint256 i=0; i<1; i++){
-            savedPath.push(requestPath[myid][i]);
-        }*/
         length = requestPath[myid].length;
-        //savedPath = requestPath[myid];
-        savedRoot = requestHash[myid];
-        reqyear = requestYear[myid];
+        uint256 reqyear = requestYear[myid];
         if(verify(requestPath[myid], certificates[reqyear], calculatedHash)){
             verify1 = 1;
+            emit VerificationResult(myid, true);
         }
         else{
             verify1 = 2;
+            emit VerificationResult(myid, false);
         }
     }
     
-    function verify(bytes32[] memory proof, bytes32 root, bytes32 leaf) public pure returns (bool) {
+    /*Verifies if provided leaf and merkle path are valid with respect to provided root*/
+    function verify(bytes32[] memory proof, bytes32 root, bytes32 leaf) internal pure returns (bool) {
         bytes32 computedHash = leaf;
         for (uint256 i = 0; i < proof.length; i++) {
             bytes32 proofElement = proof[i];

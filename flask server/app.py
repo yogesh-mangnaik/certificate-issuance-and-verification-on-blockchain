@@ -68,6 +68,10 @@ def upload():
 def publish():
 	return render_template("publish.html")
 
+@app.route('/index')
+def index():
+	return render_template("index.html")
+
 @app.route("/query")
 def hash():
 	normalhash = request.args.get('hash')
