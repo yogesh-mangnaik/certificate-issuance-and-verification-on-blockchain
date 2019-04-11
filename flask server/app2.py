@@ -21,10 +21,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/dropfile')
-def dropfile():
-    return render_template('dropfile.html')
-
 @app.route('/uploadfile', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -104,4 +100,4 @@ def data():
 	return "Working"
 
 if __name__ == "__main__":
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=90)

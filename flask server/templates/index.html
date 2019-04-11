@@ -4,7 +4,7 @@
 	<title>Certificate Issuance</title>
 
 	<script src="static/node_modules/web3/dist/web3.min.js"></script>
-	<script type="static/web3_functions.js"></script>
+	<script src="static/web3_functions.js"></script>
 </head>
 <body>
 	<script>
@@ -313,29 +313,26 @@
         "type": "function"
     }
 ]);
-        var contract = contractInstance.at('0xc495158b54d274a0e9562b619fdd5b84a22f6910');
+        var contract = contractInstance.at('0xc469170e74036de9f959719706c60892a69d9837');
         document.write("Contract Created");
-        var ar = ["0x0098cac06b454f9c3f5397d73e8bdc9d8a6a9765fc63276c18c9f13744502796", 
-        "0xc123098ba4dd9b498a6fcc386d48723f9337abe3ba6eea59b38f4267ffb7790f", 
-        "0xcd2f7f567e2b2afd0e209c29789b92b62ffad945e46385058cb39b3074bf0999", 
-        "0x6e36c673faf0879fc8ff4ae7c014bdc6f0b5cb037e8308521ad32abfa101276b", 
+        var ar = ["0x46bcb0667e4ba7c91afb3fdb8753294a370e25d7b6a282fafb7642f44987bf01", 
+        "0x8bf87f4385e0a5a8afbf481b7550631cb18e44dae512570610862a61c56db050", 
+        "0x498586243de256b7c73e5bfa2b5f8517e75824a450f41acecd46b609a3e91264", 
+        "0xa777bf0fb1116388df87b27c356b68e8cd4fc5a4256c51543db910f5ccef93e8", 
         "0x324156d49068358c0c452cd1e58610d70ec34ec6a0cfa96a72efa2630c96419e", 
-        "0xc964d24ef2a6971f71dcd3a69c4c31bf011e0843d53538b32f644e7ac984aee4", 
-        "0xc89ca1574de01eddbbde3fa0731f8546b464ce000e8d8cac63d747454ed9f42a", 
-        "0x111c367719409f1dac447418e776d65a70ad147bd4a3b4ca5f8866da6f1c3a9e"]
+        "0x3a0385f0e527fbbb13237f60cd78c6befe54f72df9c1538e8ee8cedaf4de5eb7", 
+        "0xbe473763a680ebebbb4b1c494e97bf0e08962e22f9f0e2f583641481830e0340", 
+        "0xa2165e87f1e736aca474088670cabdcf368be82a355541ab7071fc542a3105ce"]
         function showMessage(){
-           contract.publish(201, "0x88533eed01351136c4b1ba7df5e3ec5dc5f78d7c4a2b4f7e21236c7cdbc6158f",function(error, result){
-                if(!error){
-                    console.log(result);
-                }
-                else{
-                    console.log(error);
-                }
+            publishHash("0x88533eed01351136c4b1ba7df5e3ec5dc5f78d7c4a2b4f7e21236c7cdbc6158f", 2012, function(error, result){
+                    if(!error){
+                        console.log(result);
+                    }
             });
         }
 
         function verify(){
-            contract.verify(ar, "0x59298a71f70f3621e114e763846d80b4154d21f41d9591852ecf818fe0b11935",
+            contract.verify(ar, "0x15c83098953521b37cbf0e20d353e05ba44935a34a0fbf8962473d63190ed57c",
                 201, function(error, result){
                     if(!error){
                         console.log(result);
@@ -349,6 +346,8 @@
         publishEvent.watch(function(error, result){
             if(!error){
                 console.log(result);
+                console.log("Published root"); 
+                console.log(result.args['root']);
             }
             else{
                 console.log(result);
@@ -358,7 +357,10 @@
         var verificationEvent = contract.VerificationResult({}, {fromBlock: 0, toBlock: 'latest'});
         verificationEvent.watch(function(error, result){
             if(!error){
+                console.log("VerificationResult");
                 console.log(result);
+                console.log(result.args['requestID']);
+                console.log(result.args['verificationStatus']);
             }
         });
 
