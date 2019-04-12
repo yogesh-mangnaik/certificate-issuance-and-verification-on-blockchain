@@ -1,29 +1,28 @@
 pragma solidity >=0.4.22 <0.6.0;
 
 import "./MyToken.sol";
+import "./CertificatePublishing.sol";
 import "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.25.sol";
 
 contract Certificates is usingOraclize {
     
     //test variables
     bytes32 public lastid;
-    bytes32 public calculatedHash;
-    uint256 public length;
+    //bytes32 public calculatedHash;
     uint256 public verify1 = 0;
     
-    mapping (uint256 => bytes32) public certificates;
+    //mapping (uint256 => bytes32) public certificates;
     mapping (bytes32 => bytes32[]) public requestPath;
     mapping (bytes32 => uint256) public requestYear;
-    mapping (bytes32 => bytes32) public requestHash;
     
     address owner;
+    CertificatePublishing public certificatesRootContract;
     MyToken public tokenContract;
-    uint256 verificationFee = 30;
-    uint decimals = 18;
+   
     
     event LogNewOraclizeQuery(string description);
     event VerificationResult(bytes32 requestID, bool verificationStatus);
-    event VerificationRequest(bytes32 requestID);
+    event VerificationRequest(bytes32 requestID, string requestedHash, address requestSender);
     event PublishStatus(bytes32 root);
     
     /*To be used to set accessiblity of function so that
@@ -33,33 +32,33 @@ contract Certificates is usingOraclize {
         _;
     }
     
-    constructor() public payable{
+    constructor(CertificatePublishing contractAddress) public payable{
         owner = msg.sender;
+        certificatesRootContract = contractAddress;
         //tokenContract = token;
     }
     
     /*Used to publish the merkle root of a particular years
       Can only be called by the owner of the contract*/
-    function publish(uint year, bytes32 root) public onlyOwner{
+    /*function publish(uint year, bytes32 root) public onlyOwner{
         if(certificates[year] == 0x0)
             certificates[year] = root;
             emit PublishStatus(root);
-    }
+    }*/
     
     function verify(bytes32[] memory merklepath, string hash, uint256 year) public returns (bytes32){
         if (oraclize_getPrice("URL") > address(this).balance) {
-           emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            string memory url = strConcat("json(http://fbd81523.ngrok.io/query?hash=", hash, ").value");
+            string memory url = strConcat("json(http://f024f854.ngrok.io/query?hash=", hash, ").value");
             bytes32 id = oraclize_query("URL", url);
             lastid = id;
             requestYear[id] = year;
-            requestHash[id] = certificates[year];
             for(uint256 i=0; i<merklepath.length; i++){
                 requestPath[id].push(merklepath[i]);
             }
-            emit VerificationRequest(id);
+            emit VerificationRequest(id, hash, msg.sender);
             return id;
         }
     }
@@ -69,10 +68,9 @@ contract Certificates is usingOraclize {
         if (msg.sender != oraclize_cbAddress())
             revert();
         bytes32 hash = keccak256(result);
-        calculatedHash = hash;
-        length = requestPath[myid].length;
+        bytes32 calculatedHash = hash;
         uint256 reqyear = requestYear[myid];
-        if(verify(requestPath[myid], certificates[reqyear], calculatedHash)){
+        if(verify(requestPath[myid], certificatesRootContract.getRoot(reqyear), calculatedHash)){
             verify1 = 1;
             emit VerificationResult(myid, true);
         }
