@@ -68,6 +68,10 @@ def upload_file():
 def upload():
 	return render_template("upload.html")
 
+@app.route('/filereader')
+def filereader():
+    return render_template('filereader.html')
+
 @app.route("/publish")
 def publish():
 	return render_template("publish.html")

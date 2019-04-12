@@ -5,80 +5,46 @@ if (typeof web3 !== 'undefined') {
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 }
 
-var contractInstance = web3.eth.contract([
-{
-	"constant": false,
-	"inputs": [
-	{
-		"name": "year",
-		"type": "uint256"
-	},
-	{
-		"name": "root",
-		"type": "bytes32"
-	}
-	],
-	"name": "publish",
-	"outputs": [],
-	"payable": false,
-	"stateMutability": "nonpayable",
-	"type": "function"
-},
-{
-	"inputs": [
-	{
-		"name": "token",
-		"type": "address"
-	}
-	],
-	"payable": true,
-	"stateMutability": "payable",
-	"type": "constructor"
-},
-{
-	"constant": true,
-	"inputs": [
-	{
-		"name": "",
-		"type": "uint256"
-	}
-	],
-	"name": "certificates",
-	"outputs": [
-	{
-		"name": "",
-		"type": "bytes32"
-	}
-	],
-	"payable": false,
-	"stateMutability": "view",
-	"type": "function"
-},
-{
-	"constant": true,
-	"inputs": [],
-	"name": "tokenContract",
-	"outputs": [
-	{
-		"name": "",
-		"type": "address"
-	}
-	],
-	"payable": false,
-	"stateMutability": "view",
-	"type": "function"
-}
-]);
-var contract = contractInstance.at('0x9a7823239aac0191c6f46aea2cc871ae984ea40e');
+var requestID;
 
-function publishHash(hash, year){
+var publishingContractInstance = web3.eth.contract(publishingContractAbi);
+var publishingContract = publishingContractInstance.at(publishingContractAddress);
+
+var verificationContractInstance = web3.eth.contract(verificationContractAbi);
+var verificationContract = verificationContractInstance.at(verificationContractAddress);
+
+function publishHash(hash, year, callback){
 	console.log("Publishing Hash");
-	contract.publish(year, hash,function(error, result){
+	publishingContract.publish(hash, year, callback);
+}
+
+function verifyCertificate(merklePath, hash, year, callback, resultCallback, requestCallback){
+	console.log("Verifying");
+	verificationContract.verify(merklePath, hash, year, callback);
+	console.log(requestID);
+	var verificationEvent = verificationContract.VerificationResult({}, {fromBlock: 0, toBlock: 'latest'});
+	verificationEvent.watch(function(error, result){
 		if(!error){
-			console.log(result);
+			var returnID = result.args['requestID'];
+			if(returnID == requestID){
+				console.log("Verification Status : ".concat(result.args['verificationStatus']));
+			}
+			resultCallback();
 		}
 		else{
-			console.log(error);
+			console.log("Error Occured");
+		}
+	});
+	var veriEvent = verificationContract.VerificationRequest({}, {fromBlock: 0, toBlock: 'latest'});
+	veriEvent.watch(function(error, result){
+		if(!error){
+			requestID = result.args['requestID'];
+			var requestedHash = result.args['requestedHash'];
+			var requestSender = result.args['requestSender'];
+			if(web3.eth.accounts[0] == requestSender && requestedHash == hash){
+				console.log("Obtained request ID : ".concat(requestID));
+			}
+			requestCallback();
 		}
 	});
 }
