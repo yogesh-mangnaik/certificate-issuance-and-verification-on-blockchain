@@ -8,6 +8,7 @@ import os
 from werkzeug import secure_filename
 from web3 import Web3
 from utils import Utils
+import pyqrcode
 
 from merkle_tree import MerkleTree
 from merkle_tree import TreeNode

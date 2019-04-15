@@ -22,7 +22,7 @@ contract Certificates is usingOraclize {
     
     event LogNewOraclizeQuery(string description);
     event VerificationResult(bytes32 requestID, bool verificationStatus);
-    event VerificationRequest(bytes32 requestID, string requestedHash, address requestSender);
+    event VerificationRequest(bytes32 requestID, string requestedHash, address requestSender, uint256 timeStamp);
     event PublishStatus(bytes32 root);
     
     /*To be used to set accessiblity of function so that
@@ -46,19 +46,19 @@ contract Certificates is usingOraclize {
             emit PublishStatus(root);
     }*/
     
-    function verify(bytes32[] memory merklepath, string hash, uint256 year) public returns (bytes32){
+    function verify(bytes32[] memory merklepath, string hash, uint256 year, uint256 timestamp) public returns (bytes32){
         if (oraclize_getPrice("URL") > address(this).balance) {
             emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            string memory url = strConcat("json(http://f024f854.ngrok.io/query?hash=", hash, ").value");
+            string memory url = strConcat("json(http://e5e37051.ngrok.io/query?hash=", hash, ").value");
             bytes32 id = oraclize_query("URL", url);
             lastid = id;
             requestYear[id] = year;
             for(uint256 i=0; i<merklepath.length; i++){
                 requestPath[id].push(merklepath[i]);
             }
-            emit VerificationRequest(id, hash, msg.sender);
+            emit VerificationRequest(id, hash, msg.sender, timestamp);
             return id;
         }
     }

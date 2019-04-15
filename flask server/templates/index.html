@@ -9,6 +9,7 @@
 <body>
 	<script>
         console.log(verificationContractAbi);
+        console.log(new Date().getTime())
         if (typeof web3 !== 'undefined') {
          web3 = new Web3(web3.currentProvider);
          document.write("Injected Web3");
@@ -26,7 +27,7 @@
         "0xbe473763a680ebebbb4b1c494e97bf0e08962e22f9f0e2f583641481830e0340", 
         "0xa2165e87f1e736aca474088670cabdcf368be82a355541ab7071fc542a3105ce"]
         function showMessage(){
-            publishHash("0x88533eed01351136c4b1ba7df5e3ec5dc5f78d7c4a2b4f7e21236c7cdbc6158f", 2012, function(error, result){
+            publishHash("0x39f4624bad846cee578aab637529f766aaefe1b60730bfe9c988a0e1d3512b87", 2013, function(error, result){
                 if(!error){
                     console.log(result);
                 }
@@ -37,8 +38,9 @@
             var obj = JSON.parse(jsondata);
             var hash = obj.header.hash;
             var merklePath = obj.header.merkleproof;
-            verifyCertificate(merklePath, hash,
-                2012, function(error, result){
+            var currentTimeStamp = new Date().getTime();
+            verifyCertificate(merklePath, hash, 2013, currentTimeStamp, 
+                function(error, result){
 
                 } , function(){
 

@@ -8,6 +8,7 @@ import os
 from werkzeug import secure_filename
 from web3 import Web3
 from utils import Utils
+import pyqrcode
 
 from merkle_tree import MerkleTree
 from merkle_tree import TreeNode
@@ -18,47 +19,49 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+	return '.' in filename and \
+		   filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/uploadfile', methods=['GET', 'POST'])
 def upload_file():
-    if request.method == 'POST':
-    	f = request.files['file']
-    	f.save(secure_filename("student_data.csv"))
-    	filedata = pd.read_csv('student_data.csv')
-    	tree = MerkleTree()
-    	columns = list(filedata.columns)
-    	for i in range(len(filedata)):
-    		data = {}
-    		for j in range(len(columns)):
-    			s = filedata[columns[j]][i]
-    			data[columns[j]] = str(s)
-    		json_data = json.dumps(data)
-    		tree.add(json_data)
-    	tree.createTree()
-    	Utils.writeToFile("root.txt", Web3.toHex(tree.getMerkleRoot().value))
-    	# generate the certificate json with hash and merklepath in header
-    	# and data in certificate
-    	for i in range(len(filedata)):
-    		data = {}
-    		header = {}
-    		header['hash'] = Web3.toHex(tree.getLeafHash(i))
-    		header['enchash'] = Web3.toHex(tree.getEncryptedLeafHash(i))
-    		path = []
-    		for x in range(len(tree.getMerklePath(i))):
-    			path.append(Web3.toHex(tree.getMerklePath(i)[x]))
-    		header['merkleproof'] = path
-    		data['header'] = header
-    		certificateData = {}
-    		for j in range(len(columns)):
-    			certificateData[columns[j]] = str(filedata[columns[j]][i])
-    		data['certificate'] = certificateData
-    		json_data = json.dumps(data)
-    		Utils.writeToFile(certificateData['ID'] + ".txt", json_data)
-    	return "Successful"
-    else:
-    	return "No File Selected"
+	if request.method == 'POST':
+		f = request.files['file']
+		f.save(secure_filename("student_data.csv"))
+		filedata = pd.read_csv('student_data.csv')
+		tree = MerkleTree()
+		columns = list(filedata.columns)
+		for i in range(len(filedata)):
+			data = {}
+			for j in range(len(columns)):
+				s = filedata[columns[j]][i]
+				data[columns[j]] = str(s)
+			json_data = json.dumps(data)
+			tree.add(json_data)
+		tree.createTree()
+		Utils.writeToFile("root.txt", Web3.toHex(tree.getMerkleRoot().value))
+		# generate the certificate json with hash and merklepath in header
+		# and data in certificate
+		for i in range(len(filedata)):
+			data = {}
+			header = {}
+			header['hash'] = Web3.toHex(tree.getLeafHash(i))
+			header['enchash'] = Web3.toHex(tree.getEncryptedLeafHash(i))
+			path = []
+			for x in range(len(tree.getMerklePath(i))):
+				path.append(Web3.toHex(tree.getMerklePath(i)[x]))
+			header['merkleproof'] = path
+			data['header'] = header
+			certificateData = {}
+			for j in range(len(columns)):
+				certificateData[columns[j]] = str(filedata[columns[j]][i])
+			data['certificate'] = certificateData
+			json_data = json.dumps(data)
+			im = pyqrcode.create(json_data)
+			im.png(certificateData['ID'] + '.png', scale=6)
+			Utils.writeToFile(certificateData['ID'] + ".txt", json_data)
+		return "Successful"
+	else:
+		return "No File Selected"
 
 @app.route("/upload")
 def upload():
@@ -100,4 +103,4 @@ def data():
 	return "Working"
 
 if __name__ == "__main__":
-    app.run(debug=True, port=90)
+	app.run(debug=True, port=90)

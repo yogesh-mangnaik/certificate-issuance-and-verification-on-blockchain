@@ -6,6 +6,7 @@ if (typeof web3 !== 'undefined') {
 }
 
 var requestID;
+var timestampHash;
 
 var publishingContractInstance = web3.eth.contract(publishingContractAbi);
 var publishingContract = publishingContractInstance.at(publishingContractAddress);
@@ -18,9 +19,17 @@ function publishHash(hash, year, callback){
 	publishingContract.publish(hash, year, callback);
 }
 
-function verifyCertificate(merklePath, hash, year, callback, resultCallback, requestCallback){
+function verifyCertificate(merklePath, hash, year, timestamp, resultCallback, requestCallback){
 	console.log("Verifying");
-	verificationContract.verify(merklePath, hash, year, callback);
+	timestampHash = timestamp;
+	verificationContract.verify(merklePath, hash, year, timestamp, function(error, result){
+		if(!error){
+			console.log(result);
+		}
+		else{
+			console.log(error);
+		}
+	});
 	console.log(requestID);
 	var verificationEvent = verificationContract.VerificationResult({}, {fromBlock: 0, toBlock: 'latest'});
 	verificationEvent.watch(function(error, result){
@@ -41,7 +50,8 @@ function verifyCertificate(merklePath, hash, year, callback, resultCallback, req
 			requestID = result.args['requestID'];
 			var requestedHash = result.args['requestedHash'];
 			var requestSender = result.args['requestSender'];
-			if(web3.eth.accounts[0] == requestSender && requestedHash == hash){
+			var tsh = result.args['timeStamp'];
+			if(web3.eth.accounts[0] == requestSender && requestedHash == hash && timestampHash == tsh){
 				console.log("Obtained request ID : ".concat(requestID));
 			}
 			requestCallback();
