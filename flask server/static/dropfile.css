@@ -155,9 +155,13 @@ input[type="file"] {
   text-align    : center;
   transition    : background 0.3s, color 0.3s;
 }
-
 #file-drag:hover {
   background : #DEF2F1;
+}
+
+#file-drag:hover,
+#file-drag.hover {
+ 
   border-color : #FEFFFF;
   border-style : solid;
   box-shadow   : inset 0px 3px 5px 4px #3AAFA9;

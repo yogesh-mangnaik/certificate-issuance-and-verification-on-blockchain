@@ -14,9 +14,27 @@ var publishingContract = publishingContractInstance.at(publishingContractAddress
 var verificationContractInstance = web3.eth.contract(verificationContractAbi);
 var verificationContract = verificationContractInstance.at(verificationContractAddress);
 
-function publishHash(hash, year, callback){
+function publishRoot(hash, year, callback){
 	console.log("Publishing Hash");
-	publishingContract.publish(hash, year, callback);
+	publishingContract.publish(hash, year, function(error, result){
+		if(!error){
+			console.log("Successfully");
+		}
+	});
+	var publishingEvent = publishingContract.PublishStatus({}, {fromBlock: 0, toBlock: 'latest'});
+	publishingEvent.watch(function(error, result){
+		if(!error){
+			var roothash = result.args['root'];
+			var rootyear = result.args['year'];
+			if(roothash == hash){
+				console.log(roothash);
+				callback(true, result);
+			}
+		}
+		{
+			callback(false, error);
+		}
+	})
 }
 
 function verifyCertificate(merklePath, hash, year, timestamp, resultCallback, requestCallback){

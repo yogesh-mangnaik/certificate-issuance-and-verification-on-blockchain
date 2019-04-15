@@ -49,7 +49,6 @@ def upload_file():
     		data = {}
     		header = {}
     		header['hash'] = Web3.toHex(tree.getLeafHash(i))
-    		header['enchash'] = Web3.toHex(tree.getEncryptedLeafHash(i))
     		path = []
     		for x in range(len(tree.getMerklePath(i))):
     			path.append(Web3.toHex(tree.getMerklePath(i)[x]))
@@ -61,9 +60,9 @@ def upload_file():
     		data['certificate'] = certificateData
     		json_data = json.dumps(data)
     		Utils.writeToFile(certificateData['ID'] + ".txt", json_data)
-    	return "Successful"
+    	return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = 2014)
     else:
-    	return "No File Selected"
+    	return "<image src='static/not_found.png' style='width:100%; height:100%;'/>"
 
 @app.route("/upload")
 def upload():
@@ -75,7 +74,7 @@ def filereader():
 
 @app.route("/publish")
 def publish():
-	return render_template("publish.html")
+	return render_template("uploadcsv.html")
 
 @app.route('/index')
 def index():
@@ -109,4 +108,4 @@ def data():
 	return "Working"
 
 if __name__ == "__main__":
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=80, threaded=True)

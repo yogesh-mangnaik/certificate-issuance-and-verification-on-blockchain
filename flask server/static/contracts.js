@@ -1,5 +1,5 @@
-var verificationContractAddress = '0x3bec29b32652c52c8d58a9e86a3c1baedf9053f3';
-var publishingContractAddress   = '0x3a2847bce96f6c616a90a8ff6a2d1d1a78365e66';
+var verificationContractAddress = '0xb0d829d767b69d2a9790316359b66bf35ba52663';
+var publishingContractAddress   = '0x0f83abe586f801f06ba135b8e8caa20dc532a287';
 
 var verificationContractAbi = [
 	{
@@ -141,18 +141,6 @@ var verificationContractAbi = [
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "root",
-				"type": "bytes32"
-			}
-		],
-		"name": "PublishStatus",
-		"type": "event"
-	},
-	{
 		"constant": true,
 		"inputs": [],
 		"name": "certificatesRootContract",
@@ -254,30 +242,6 @@ var verificationContractAbi = [
 
 var publishingContractAbi = [
 	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "root",
-				"type": "bytes32"
-			},
-			{
-				"name": "year",
-				"type": "uint256"
-			}
-		],
-		"name": "publish",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
 		"constant": true,
 		"inputs": [
 			{
@@ -314,5 +278,46 @@ var publishingContractAbi = [
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "root",
+				"type": "bytes32"
+			},
+			{
+				"name": "year",
+				"type": "uint256"
+			}
+		],
+		"name": "publish",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "root",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "year",
+				"type": "uint256"
+			}
+		],
+		"name": "PublishStatus",
+		"type": "event"
 	}
 ];

@@ -1,5 +1,4 @@
 import hashlib
-import sha3
 from web3 import Web3
 from collections import deque
 import time
