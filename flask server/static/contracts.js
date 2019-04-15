@@ -1,5 +1,5 @@
-var verificationContractAddress = '0xb0d829d767b69d2a9790316359b66bf35ba52663';
-var publishingContractAddress   = '0x0f83abe586f801f06ba135b8e8caa20dc532a287';
+var verificationContractAddress = '0x8bc94f555d004194c5b4213ef6c7ba535454549d';
+var publishingContractAddress   = '0x0b48285e5f619168de3fdf95c6bddba94a437235';
 
 var verificationContractAbi = [
 	{
@@ -139,6 +139,20 @@ var verificationContractAbi = [
 		],
 		"name": "VerificationRequest",
 		"type": "event"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "calculatedHash",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"constant": true,

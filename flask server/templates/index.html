@@ -3,7 +3,7 @@
 <head>
 	<title>Certificate Issuance</title>
 	<script src="/static/node_modules/web3/dist/web3.min.js"></script>
-    <script type="text/javascript" src="/tatic/contracts.js"></script>
+    <script type="text/javascript" src="/static/contracts.js"></script>
     <script src="/static/web3_functions.js"></script>
 </head>
 <body>
@@ -27,7 +27,7 @@
         "0xbe473763a680ebebbb4b1c494e97bf0e08962e22f9f0e2f583641481830e0340", 
         "0xa2165e87f1e736aca474088670cabdcf368be82a355541ab7071fc542a3105ce"]
         function showMessage(){
-            publishHash("0x39f4624bad846cee578aab637529f766aaefe1b60730bfe9c988a0e1d3512b87", 2013, function(error, result){
+            publishRoot("0xbdb0124a0c4dca60b367d83b67f007a94b8f5a2bfdc3c61ec2948e5e95bd3b6d", 2014, function(error, result){
                 if(!error){
                     console.log(result);
                 }
@@ -35,11 +35,17 @@
         }
 
         function verify(){
-            var obj = JSON.parse(jsondata);
+            try{
+                var obj = JSON.parse(jsondata);
+            }
+            catch(exception){
+                console.log("Error Occured");
+                return;
+            }
             var hash = obj.header.hash;
             var merklePath = obj.header.merkleproof;
             var currentTimeStamp = new Date().getTime();
-            verifyCertificate(merklePath, hash, 2013, currentTimeStamp, 
+            verifyCertificate(merklePath, hash, 2014, currentTimeStamp, 
                 function(error, result){
 
                 } , function(){
@@ -63,7 +69,7 @@
             var reader = new FileReader();
             reader.onload = function(){
                 var text = reader.result;
-                console.log(reader.result);
+                //console.log(reader.result);
                 jsondata = reader.result;
             };
             reader.readAsText(input.files[0]);

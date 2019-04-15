@@ -72,6 +72,10 @@ def upload():
 def filereader():
     return render_template('filereader.html')
 
+@app.route('/verify')
+def verifyCerti():
+    return render_template('verify.html')
+
 @app.route("/publish")
 def publish():
 	return render_template("uploadcsv.html")
