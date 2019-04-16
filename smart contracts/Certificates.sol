@@ -8,22 +8,21 @@ contract Certificates is usingOraclize {
     
     //test variables
     bytes32 public lastid;
-    //bytes32 public calculatedHash;
+    bytes32 public calculatedHash;
     uint256 public verify1 = 0;
     
     //mapping (uint256 => bytes32) public certificates;
-    mapping (bytes32 => bytes32[]) public requestPath;
-    mapping (bytes32 => uint256) public requestYear;
+    mapping (bytes32 => bytes32[]) requestPath;
+    mapping (bytes32 => uint256) requestYear;
+    mapping (bytes32 => bool) public previousRequests;
     
     address owner;
     CertificatePublishing public certificatesRootContract;
     MyToken public tokenContract;
-   
     
     event LogNewOraclizeQuery(string description);
     event VerificationResult(bytes32 requestID, bool verificationStatus);
-    event VerificationRequest(bytes32 requestID, string requestedHash, address requestSender, uint256 timeStamp);
-    event PublishStatus(bytes32 root);
+    event VerificationRequest(bytes32 requestID, string requestedHash, address requestSender, uint256 timeStamp, bool status);
     
     /*To be used to set accessiblity of function so that
       only the deployer of the contract can call it*/
@@ -38,29 +37,27 @@ contract Certificates is usingOraclize {
         //tokenContract = token;
     }
     
-    /*Used to publish the merkle root of a particular years
-      Can only be called by the owner of the contract*/
-    /*function publish(uint year, bytes32 root) public onlyOwner{
-        if(certificates[year] == 0x0)
-            certificates[year] = root;
-            emit PublishStatus(root);
-    }*/
-    
     function verify(bytes32[] memory merklepath, string hash, uint256 year, uint256 timestamp) public returns (bytes32){
         if (oraclize_getPrice("URL") > address(this).balance) {
             emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            emit VerificationRequest(0x0, "", msg.sender, timestamp, false);
+            
         } else {
             emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            string memory url = strConcat("json(http://e5e37051.ngrok.io/query?hash=", hash, ").value");
+            string memory url = strConcat("json(http://0343e691.ngrok.io/query?hash=", hash, ").value");
             bytes32 id = oraclize_query("URL", url);
             lastid = id;
             requestYear[id] = year;
             for(uint256 i=0; i<merklepath.length; i++){
                 requestPath[id].push(merklepath[i]);
             }
-            emit VerificationRequest(id, hash, msg.sender, timestamp);
+            emit VerificationRequest(id, hash, msg.sender, timestamp, true);
             return id;
         }
+    }
+    
+    function addMoney() public payable{
+        
     }
     
     //callback function - called when oraclize query returns with some data
@@ -68,15 +65,17 @@ contract Certificates is usingOraclize {
         if (msg.sender != oraclize_cbAddress())
             revert();
         bytes32 hash = keccak256(result);
-        bytes32 calculatedHash = hash;
+        calculatedHash = hash;
         uint256 reqyear = requestYear[myid];
         if(verify(requestPath[myid], certificatesRootContract.getRoot(reqyear), calculatedHash)){
             verify1 = 1;
             emit VerificationResult(myid, true);
+            previousRequests[myid] = true;
         }
         else{
             verify1 = 2;
             emit VerificationResult(myid, false);
+            previousRequests[myid] = false;
         }
     }
     

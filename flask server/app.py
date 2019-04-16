@@ -60,7 +60,7 @@ def upload_file():
     		data['certificate'] = certificateData
     		json_data = json.dumps(data)
     		Utils.writeToFile(certificateData['ID'] + ".txt", json_data)
-    	return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = 2014)
+    	return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = 2015)
     else:
     	return "<image src='static/not_found.png' style='width:100%; height:100%;'/>"
 

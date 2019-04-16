@@ -18,6 +18,7 @@ function publishRoot(hash, year, callback){
 	console.log("Publishing Hash : " + hash);
 	publishingContract.publish(hash, year, function(error, result){
 		if(!error){
+
 		}
 	});
 	var publishingEvent = publishingContract.PublishStatus({}, {fromBlock: 0, toBlock: 'latest'});
@@ -25,7 +26,9 @@ function publishRoot(hash, year, callback){
 		if(!error){
 			var roothash = result.args['root'];
 			var rootyear = result.args['year'];
-			if(roothash == hash){
+			console.log(year);
+			console.log(rootyear);
+			if(roothash == hash && rootyear == year){
 				console.log("Successfully Published : " + roothash);
 				callback(true, result);
 			}
@@ -34,7 +37,7 @@ function publishRoot(hash, year, callback){
 		{
 			callback(false, error);
 		}
-	})
+	});
 }
 
 function verifyCertificate(merklePath, hash, year, timestamp, resultCallback, requestCallback){
@@ -65,14 +68,23 @@ function verifyCertificate(merklePath, hash, year, timestamp, resultCallback, re
 	var veriEvent = verificationContract.VerificationRequest({}, {fromBlock: 0, toBlock: 'latest'});
 	veriEvent.watch(function(error, result){
 		if(!error){
-			requestID = result.args['requestID'];
-			var requestedHash = result.args['requestedHash'];
-			var requestSender = result.args['requestSender'];
-			var tsh = result.args['timeStamp'];
-			if(web3.eth.accounts[0] == requestSender && requestedHash == hash && timestampHash == tsh){
-				console.log("Obtained request ID : ".concat(requestID));
+			var status = result.args['status'];
+			if(status){
+				requestID = result.args['requestID'];
+				var requestedHash = result.args['requestedHash'];
+				var requestSender = result.args['requestSender'];
+				var tsh = result.args['timeStamp'];
+				if(web3.eth.accounts[0] == requestSender && requestedHash == hash && timestampHash == tsh){
+					console.log("Obtained request ID : ".concat(requestID));
+				}
+				requestCallback(true);
 			}
-			requestCallback();
+			else{
+				requestCallback(false);
+			}			
+		}
+		else{
+			requestCallback(false);
 		}
 	});
 }

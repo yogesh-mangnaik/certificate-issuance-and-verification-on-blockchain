@@ -1,5 +1,5 @@
-var verificationContractAddress = '0xd6bf8acae52e3c5cadfe7df6cf7ee7e2625152fa';
-var publishingContractAddress   = '0x47dec607758e8dd7878a6c9537ced2adb9332c6c';
+var verificationContractAddress = '0x61227b30e26ce517177e09e58f1ef2f41dedef3d';
+var publishingContractAddress   = '0xeb929f56d825e18ec1f32f4924ba06a7dc42263f';
 
 var verificationContractAbi = [
 	{
@@ -40,6 +40,15 @@ var verificationContractAbi = [
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "addMoney",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -135,6 +144,11 @@ var verificationContractAbi = [
 				"indexed": false,
 				"name": "timeStamp",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "status",
+				"type": "bool"
 			}
 		],
 		"name": "VerificationRequest",
@@ -188,36 +202,13 @@ var verificationContractAbi = [
 			{
 				"name": "",
 				"type": "bytes32"
-			},
-			{
-				"name": "",
-				"type": "uint256"
 			}
 		],
-		"name": "requestPath",
+		"name": "previousRequests",
 		"outputs": [
 			{
 				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"name": "requestYear",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
+				"type": "bool"
 			}
 		],
 		"payable": false,
