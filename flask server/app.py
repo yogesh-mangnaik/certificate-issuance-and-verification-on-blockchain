@@ -68,10 +68,6 @@ def upload_file():
 def upload():
 	return render_template("upload.html")
 
-@app.route('/filereader')
-def filereader():
-    return render_template('filereader.html')
-
 @app.route('/verify')
 def verifyCerti():
     return render_template('verify.html')
@@ -94,22 +90,6 @@ def hash():
 	data['value'] = str(x)
 	json_data = json.dumps(data)
 	return json_data
-
-@app.route("/equery")
-def encrypthash():
-	normalhash = request.args.get('hash')
-	privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
-	x = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [normalhash, privateKey]))
-	y = Web3.toHex(Web3.soliditySha3(['string'], [x]))
-	data = {}
-	data['value'] = str(y)
-	json_data = json.dumps(data)
-	return json_data
-
-@app.route("/data")
-def data():
-	read_csv()
-	return "Working"
 
 if __name__ == "__main__":
     app.run(debug=True, port=80, threaded=True)

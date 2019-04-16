@@ -15,10 +15,9 @@ var verificationContractInstance = web3.eth.contract(verificationContractAbi);
 var verificationContract = verificationContractInstance.at(verificationContractAddress);
 
 function publishRoot(hash, year, callback){
-	console.log("Publishing Hash");
+	console.log("Publishing Hash : " + hash);
 	publishingContract.publish(hash, year, function(error, result){
 		if(!error){
-			console.log("Successfully");
 		}
 	});
 	var publishingEvent = publishingContract.PublishStatus({}, {fromBlock: 0, toBlock: 'latest'});
@@ -27,10 +26,11 @@ function publishRoot(hash, year, callback){
 			var roothash = result.args['root'];
 			var rootyear = result.args['year'];
 			if(roothash == hash){
-				console.log(roothash);
+				console.log("Successfully Published : " + roothash);
 				callback(true, result);
 			}
 		}
+		else
 		{
 			callback(false, error);
 		}

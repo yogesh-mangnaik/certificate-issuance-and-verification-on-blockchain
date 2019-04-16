@@ -4,6 +4,8 @@ contract CertificatePublishing{
     
     mapping(uint256 => bytes32) public certificateRoots;
     
+    event PublishStatus(bytes32 root, uint256 year);
+    
     address owner;
     
     /*To be used to set accessiblity of function so that
@@ -20,6 +22,7 @@ contract CertificatePublishing{
     function publish(bytes32 root, uint256 year) public onlyOwner {
         if(certificateRoots[year] == 0x0){
             certificateRoots[year] = root;
+            emit PublishStatus(root, year);
         }
     }
     
