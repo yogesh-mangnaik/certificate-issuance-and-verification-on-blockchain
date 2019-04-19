@@ -1,5 +1,5 @@
-var verificationContractAddress = '0x61227b30e26ce517177e09e58f1ef2f41dedef3d';
-var publishingContractAddress   = '0xeb929f56d825e18ec1f32f4924ba06a7dc42263f';
+var verificationContractAddress = '0xb3f9e409d06b6a5e84c2919e951b165eb6405511';
+var publishingContractAddress   = '0x058c246caa92842af2d39dedc9c0041eca24a900';
 
 var verificationContractAbi = [
 	{
@@ -49,6 +49,29 @@ var verificationContractAbi = [
 		"outputs": [],
 		"payable": true,
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "requestId",
+				"type": "bytes32"
+			},
+			{
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "getStatus",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -152,6 +175,28 @@ var verificationContractAbi = [
 			}
 		],
 		"name": "VerificationRequest",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "requestID",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "status",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "GetRequestStatus",
 		"type": "event"
 	},
 	{

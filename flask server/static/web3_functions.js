@@ -5,7 +5,7 @@ if (typeof web3 !== 'undefined') {
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 }
 
-var requestID;
+var requestID = "0xd52dc16d4c7a97639a130ce768e95de0ebea033d1bf5d0d19482a708a29dbfa1";
 var timestampHash;
 
 var publishingContractInstance = web3.eth.contract(publishingContractAbi);
@@ -14,77 +14,122 @@ var publishingContract = publishingContractInstance.at(publishingContractAddress
 var verificationContractInstance = web3.eth.contract(verificationContractAbi);
 var verificationContract = verificationContractInstance.at(verificationContractAddress);
 
-function publishRoot(hash, year, callback){
-	console.log("Publishing Hash : " + hash);
+function publishRoot(hash, year, txhashcallback, callback){
+	// console.log("Publishing Hash"); //TESTING CODE
+	// setTimeout(function() {
+	// 	callback(true,"Testing");
+	// },5000);
+	// return ;
+	try{
 	publishingContract.publish(hash, year, function(error, result){
 		if(!error){
-
+			console.log("Successfully");
+			txhashcallback(result);
 		}
 	});
+	}
+	catch(excp){
+		callback(false,excp);
+		return;
+	}
 	var publishingEvent = publishingContract.PublishStatus({}, {fromBlock: 0, toBlock: 'latest'});
 	publishingEvent.watch(function(error, result){
 		if(!error){
 			var roothash = result.args['root'];
 			var rootyear = result.args['year'];
-			console.log(year);
-			console.log(rootyear);
 			if(roothash == hash && rootyear == year){
-				console.log("Successfully Published : " + roothash);
-				callback(true, result);
+				console.log(roothash);
+				console.log(result);
+				callback(true, roothash);
 			}
 		}
 		else
 		{
 			callback(false, error);
 		}
-	});
+	})
 }
 
-function verifyCertificate(merklePath, hash, year, timestamp, resultCallback, requestCallback){
-	console.log("Verifying");
+function verifyCertificate(merklePath, hash, year, timestamp,callback, requestCallback, resultCallback){
+	// console.log("Verifying");
+	// setTimeout(function(){
+	// 	requestCallback("123456678");
+	// }, 5000);
+	// setTimeout(function(){
+	// 	resultCallback(true);
+	// }, 10000);
+	// return;
 	timestampHash = timestamp;
 	verificationContract.verify(merklePath, hash, year, timestamp, function(error, result){
 		if(!error){
-			console.log(result);
+			callback(result);
 		}
 		else{
 			console.log(error);
 		}
 	});
 	console.log(requestID);
+	
+	var veriEvent = verificationContract.VerificationRequest({}, {fromBlock: 0, toBlock: 'latest'});
+	veriEvent.watch(function(error, result){
+		if(!error){
+			var status = result.args['status'];
+			var requestedHash = result.args['requestedHash'];
+			var requestSender = result.args['requestSender'];
+			var tsh = result.args['timeStamp'].c[0];
+			if(web3.eth.accounts[0] == requestSender && requestedHash == hash && tsh == timestamp)
+			{
+				if(status)
+				{
+					requestID = result.args['requestID'];
+					console.log(tsh);
+					console.log(timestamp);
+					console.log("Obtained request ID : ".concat(requestID));	
+					requestCallback(requestID);	
+				}
+				else{
+					requestCallback("Request to Oracle out of Gas");
+				}	
+			}		
+		}
+		else{
+			requestCallback("Oracle error");
+		}
+	});
 	var verificationEvent = verificationContract.VerificationResult({}, {fromBlock: 0, toBlock: 'latest'});
 	verificationEvent.watch(function(error, result){
 		if(!error){
+			console.log("Result obtained");
 			var returnID = result.args['requestID'];
 			if(returnID == requestID){
 				console.log("Verification Status : ".concat(result.args['verificationStatus']));
+				resultCallback(result.args['verificationStatus']);	
 			}
-			resultCallback();
 		}
 		else{
 			console.log("Error Occured");
 		}
 	});
-	var veriEvent = verificationContract.VerificationRequest({}, {fromBlock: 0, toBlock: 'latest'});
-	veriEvent.watch(function(error, result){
+}
+
+function getRequestStatus(requestID, callback){
+	console.log(requestID);
+	var x = verificationContract.previousRequests.call(requestID, function(error ,result){
 		if(!error){
-			var status = result.args['status'];
-			if(status){
-				requestID = result.args['requestID'];
-				var requestedHash = result.args['requestedHash'];
-				var requestSender = result.args['requestSender'];
-				var tsh = result.args['timeStamp'];
-				if(web3.eth.accounts[0] == requestSender && requestedHash == hash && timestampHash == tsh){
-					console.log("Obtained request ID : ".concat(requestID));
-				}
-				requestCallback(true);
-			}
-			else{
-				requestCallback(false);
-			}			
-		}
-		else{
-			requestCallback(false);
+			callback(result);
 		}
 	});
+}
+
+function getPublishedRoot(year, callback){
+	console.log("Requested root of year : " + year);
+	var x = publishingContract.certificateRoots(year, function(error, result){
+		if(!error){
+			console.log(year + " : " + result);
+			callback(year, result);
+		}
+		else{
+			console.log("Error occured while getting root of year : " + year);
+		}
+	})
 }

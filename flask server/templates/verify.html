@@ -1,35 +1,217 @@
 {% include 'head.html' %}
+<style>
+/**
+* Extracted from: SweetAlert
+* Modified by: Istiak Tridip
+*/
+.success-checkmark {
+    width: 80px;
+    height: 115px;
+    margin: 0 auto;
+}
+.success-checkmark .check-icon {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    border-radius: 50%;
+    box-sizing: content-box;
+    border: 4px solid #4CAF50;
+}
+.success-checkmark .check-icon::before {
+    top: 3px;
+    left: -2px;
+    width: 30px;
+    transform-origin: 100% 50%;
+    border-radius: 100px 0 0 100px;
+}
+.success-checkmark .check-icon::after {
+    top: 0;
+    left: 30px;
+    width: 60px;
+    transform-origin: 0 50%;
+    border-radius: 0 100px 100px 0;
+    animation: rotate-circle 4.25s ease-in;
+}
+.success-checkmark .check-icon::before, .success-checkmark .check-icon::after {
+    content: '';
+    height: 100px;
+    position: absolute;
+    background: #FFFFFF;
+    transform: rotate(-45deg);
+}
+.success-checkmark .check-icon .icon-line {
+    height: 5px;
+    background-color: #4CAF50;
+    display: block;
+    border-radius: 2px;
+    position: absolute;
+    z-index: 10;
+}
+.success-checkmark .check-icon .icon-line.line-tip {
+    top: 46px;
+    left: 14px;
+    width: 25px;
+    transform: rotate(45deg);
+    animation: icon-line-tip 0.75s;
+}
+.success-checkmark .check-icon .icon-line.line-long {
+    top: 38px;
+    right: 8px;
+    width: 47px;
+    transform: rotate(-45deg);
+    animation: icon-line-long 0.75s;
+}
+.success-checkmark .check-icon .icon-circle {
+    top: -4px;
+    left: -4px;
+    z-index: 10;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    position: absolute;
+    box-sizing: content-box;
+    border: 4px solid rgba(76, 175, 80, 0.5);
+}
+.success-checkmark .check-icon .icon-fix {
+    top: 8px;
+    width: 5px;
+    left: 26px;
+    z-index: 1;
+    height: 85px;
+    position: absolute;
+    transform: rotate(-45deg);
+    background-color: #FFFFFF;
+}
+
+@keyframes rotate-circle {
+    0% {
+        transform: rotate(-45deg);
+    }
+    5% {
+        transform: rotate(-45deg);
+    }
+    12% {
+        transform: rotate(-405deg);
+    }
+    100% {
+        transform: rotate(-405deg);
+    }
+}
+@keyframes icon-line-tip {
+    0% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+    54% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+    70% {
+        width: 50px;
+        left: -8px;
+        top: 37px;
+    }
+    84% {
+        width: 17px;
+        left: 21px;
+        top: 48px;
+    }
+    100% {
+        width: 25px;
+        left: 14px;
+        top: 45px;
+    }
+}
+@keyframes icon-line-long {
+    0% {
+        width: 0;
+        right: 46px;
+        top: 54px;
+    }
+    65% {
+        width: 0;
+        right: 46px;
+        top: 54px;
+    }
+    84% {
+        width: 55px;
+        right: 0px;
+        top: 35px;
+    }
+    100% {
+        width: 47px;
+        right: 8px;
+        top: 38px;
+    }
+}
+
+</style>
 <main role="main" class="container">
     <div class="container" style="margin-top:10%; margin-bottom: 10%;">
         <div class="row">
             <div class="col-sm-6 offset-sm-3">
                 <div class="card" id="home">
-                    <div class="card-header"> Publish Certificates </div>
+                    <div class="card-header"> Verify Certificate </div>
                     <div class="card-body" style="text-align:center;">
-                        <h5 class="card-title"> Drag and drop or upload the certificate file here</h5>
-                        <div id="uploader">
-                            <div id="file-upload-form">
-                            <div class="form-group row">
-                                <div class="offset-2 col-8">
-                                    <div class="input-group">
-                                        <input id="file-upload" name="file" class="form-control-file" type="file" onchange='openFile(event)'/>
+                        <div id="hash-block">
+                            <h5 class="card-title"> Drag and drop or upload the certificate file here</h5>
+                            <div id="uploader">
+                                <div id="file-upload-form">
+                                    <div class="form-group row">
+                                        <div class="offset-2 col-8">
+                                            <label class="btn btn-success" for="file-upload">
+                                                <input id="file-upload" name="file" onchange="openFile(event)" type="file" style="display:none" >
+                                                Select Certificate File
+                                            </label>
+                                            <label><span class='label label-info text-right text-secondary' id="upload-file-info">No file selected..</span></label>
+
+                                            <!-- <input id="file-upload" name="file" class="form-control-file" type="file" onchange='openFile(event)'/> -->
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="offset-2 col-8">
+                                            <button name="submit" id="file-upload-btn" type="submit" class="btn btn-primary" onclick="verify();">Verify</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="offset-2 col-8">
+                                            <div id="hash-block">
+                                                <h5 class="card-title">Certificate Details</h5>
+                                                <div id="certificate-details" class="alert alert-secondary" style="width: 100%;"> 
+
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <div class="offset-2 col-8">
-                                    <button name="submit" id="file-upload-btn" type="submit" class="btn btn-primary" onclick="verify();">Verify</button>
-                                </div>
+                        </div>
+                        <div id="loading-block" style="display:none">
+                            <div class="alert alert-warning">Waiting for Transaction ..</div>
+                            <div class="alert alert-secondary" id="transactionhash" style="display:none;"></div>
+                            <div class="alert alert-secondary" id="reqidalert" style="display:none;"></div>
+                            <div class="fa-5x">
+                                <i class="fas fa-sync fa-spin"></i>
                             </div>
-                        </form>
+
+
+                        </div>
+                        <div id="result-block" style="display:none">
+                            <div id="pubsucess"></div>
+                            <div class="alert alert-danger" id="pubfailure"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script type="text/javascript">
-    function verify(){
+    <script type="text/javascript">
+        function verify(){
+            $("#hash-block").hide("fast");
+            $("#loading-block").show("fast");
             try{
                 var obj = JSON.parse(jsondata);
             }
@@ -39,30 +221,131 @@
             }
             var hash = obj.header.hash;
             var merklePath = obj.header.merkleproof;
+            var year = obj.certificate.Year;
+            var p = obj.certificate;
+            var str = "";
+            for(var key in p){
+                if(p.hasOwnProperty(key)){
+                    str+=p[key];
+                }
+            }
+            console.log(str);
+            var hashx = web3.sha3(str);
+            if(hashx != hash){
+                $("#pubsucess").hide("fast");
+                $("#pubfailure").show("slow");
+                $("#pubfailure").html("Oops!!...The certificate is not genuine/is tampered with as hash matching failed");
+                /*$("#pubinfo").html(result);*/
+                $("#loading-block").hide("fast");
+                $("#result-block").show("slow");
+                return;
+            }
+            //var h = web3.soliditySha3(certistring);
+            //console.log(h);
+            console.log(year);
             var currentTimeStamp = new Date().getTime();
-            verifyCertificate(merklePath, hash, , currentTimeStamp, 
-                function(error, result){
+            verifyCertificate(merklePath, hash, year, currentTimeStamp,
+                function(hash){
+                    console.log("Transaction hash : " + hash);
+                    $('#transactionhash').html('<h5>Transaction Hash :</h5><a href="https://kovan.etherscan.io/tx/'+hash+'" target="_blank">'+hash);
+                    $('#transactionhash').show("fast");
+                }, 
+                function(reqID){
+                    $("#reqidalert").html('<h5>Request ID</h5>'+reqID);
+                    $("#reqidalert").show("fast");
+                }, function(result){
+                    if(result){
+                        var reshtml = '<div class="success-checkmark">\
+                        <div class="check-icon">\
+                        <span class="icon-line line-tip"></span>\
+                        <span class="icon-line line-long"></span>\
+                        <div class="icon-circle"></div>\
+                        <div class="icon-fix"></div>\
+                        </div></div>\
+                        <div class="alert alert-success">Certificate Successfully Verified<br>The submitted certificate is genuine</div>';
 
-                } , function(){
+                        $("#pubfailure").hide("fast");
+                        $("#pubsucess").show("slow");
+                        $("#pubsucess").html(reshtml);
 
-                }, function(){
+                        $("#loading-block").hide("fast");
+                        $("#result-block").show("slow");
+                    }
+                    else{
+                        $("#pubsucess").hide("fast");
+                        $("#pubfailure").show("slow");
+                        $("#pubfailure").html("Oops!!...The certificate is not genuine/is tampered with");
+                        /*$("#pubinfo").html(result);*/
+                        $("#loading-block").hide("fast");
+                        $("#result-block").show("slow");
+                    }
 
                 });
         }
-</script>
-<script type="text/javascript">
+    </script>
+    <script type="text/javascript">
         var jsondata = "";
         var openFile = function(event) {
+            event.stopPropagation();
+            /*console.log(event.dataTransfer);*/
+            $('#upload-file-info').html(event.target.files[0].name)
             var input = event.target;
 
             var reader = new FileReader();
             reader.onload = function(){
                 var text = reader.result;
-                console.log(reader.result);
+                console.log("Certificate : " + reader.result);
                 jsondata = reader.result;
+                var obj = JSON.parse(jsondata);
+                var x = JSON.stringify(obj.certificate, null, " ");
+                console.log(web3.sha3(x));
+
+                 
+                var reshtml = '<div>Registration ID : '+ obj.certificate.ID+'</div>'+
+                '<div>First Name :'+obj.certificate["First Name"]+'</div>'+
+                '<div>Middle Name :'+obj.certificate["Middle Name"]+'</div>'+
+                '<div>Last Name :'+obj.certificate["Last Name"]+'</div>'+
+                '<div>Phone Number :'+obj.certificate["Phone number"]+'</div>'+
+                '<div>Date of birth :'+obj.certificate["DOB"]+'</div>'+
+                '<div>Gender :'+obj.certificate["Gender"]+'</div>'+
+                '<div>CPI :'+obj.certificate["CPI"]+'</div>';
+                var detailsdiv = document.getElementById('certificate-details'); 
+                console.log(detailsdiv); 
+                detailsdiv.innerHTML = reshtml;
             };
-            reader.readAsText(input.files[0]);
-        };
-    </script>
+/*var reshtml = '<div>Registration ID : '+ jsondata.certificate.ID+'</div>'+
+'<div>First Name : Yogesh Mangnaik</div>'+
+'<div>Middle Name : </div>'+
+'<div>Last Name : </div>'+
+'<div>Phone Number : </div>'+
+'<div>Date of birth</div>'+
+'<div>Gender : </div>'+
+'<div>CPI : </div>';
+var data = JSON.parse(jsondata);
+console.log(data.certificate);*/
+reader.readAsText(input.files[0]);
+};
+
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+
+        $("#home").on("dragover drop", function(e) {
+            e.preventDefault();
+        });
+        $("#home").on("drop change", function(e) {
+            console.log("drop");
+            e.preventDefault(); 
+            var f = e.originalEvent.dataTransfer.files;
+            console.log(f[0].name);
+            $("#file-upload").prop("files",f);
+            $('#upload-file-info').html(f[0].name);
+
+        });
+    });
+</script>
+
 </main>
 {%include 'footer.html' %}

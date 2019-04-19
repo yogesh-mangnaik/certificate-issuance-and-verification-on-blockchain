@@ -13,7 +13,13 @@
                                 <div class="form-group row">
                                     <div class="offset-2 col-8">
                                         <div class="input-group">
-                                            <input id="file-upload" name="file" class="form-control-file" type="file" name="fileUpload" />
+                                                <label class="btn btn-primary" for="my-file-selector">
+                                                        <input id="file-upload" type="file" style="display:none" 
+                                                        onchange="$('#upload-file-info').html(this.files[0].name)">
+                                                        Upload CSV File
+                                                    </label>
+                                                    <span class='label label-info' id="upload-file-info"></span>
+                                            <!-- <input id="file-upload" name="file" class="form-control-file" type="file" name="fileUpload" /> -->
                                         </div>
                                     </div>
                                 </div>
@@ -29,12 +35,28 @@
                 <div class="card" id="computed-hash" style="">
                     <div class="card-header"> Publish certificates </div>
                     <div class="card-body" style="text-align:center;">
+                        <div id="hash-block">
                         <div class="alert alert-secondary"> <h5 class="card-title">Merkle Root : {{roothash}}</h5>
                         </div>
                         <div class="alert alert-secondary"> <h5 class="card-title">Year : {{year}}</h5>
                         </div>
                         <button class="btn btn-primary pubhlish-csv" onclick="publish();">Publish</a>
-                    </div>
+                        </div>
+                        <div id="loading-block" style="display:none">
+                                <div class="alert alert-success">Waiting for Transaction ..</div>
+                            <div class="alert alert-secondary" id="transactionhash" style="display:none;"></div>
+                                <div class="fa-5x">
+                                        <i class="fas fa-sync fa-spin"></i>
+                                </div>
+
+                
+                            </div>
+                        <div id="result-block" style="display:none">
+                            <div class="alert alert-success" id="pubsucess"></div>
+                            <div class="alert alert-danger" id="pubfailure"></div>
+                            <div class="alert alert-secondary" id="pubinfo"></div>
+                        </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -43,8 +65,32 @@
 <script type="text/javascript">
     var x = {{roothash}};
     function publish(){
+
         console.log("Publishing");
-        publishRoot('{{roothash}}', {{year}}, function(status, result){
+        $("#hash-block").hide("fast");
+        $("#loading-block").show("fast");
+        publishRoot('{{roothash}}', {{year}},function(hash){
+            console.log("Transaction Hash : " + hash);
+            $('#transactionhash').html('<h5>Transaction Hash :</h5><a href="https://kovan.etherscan.io/tx/'+hash+'" target="_blank">'+hash);
+                    $('#transactionhash').show("fast");
+        }, function(status, result){
+
+            if(status){
+                $("#pubfailure").hide("fast");
+                $("#pubsucess").show("slow");
+                $("#pubsucess").html("Successfully published the root of certificates onto blockchain");
+                $("#pubinfo").html('<h5>Published root : </h5>'+result);
+                $("#loading-block").hide("fast");
+                $("#result-block").show("slow");
+            }
+            else{
+                $("#pubsucess").hide("fast");
+                $("#pubfailure").show("slow");
+                $("#pubfailure").html("Error pubhlishing the certificates");
+                $("#pubinfo").html(result);
+                $("#loading-block").hide("fast");
+                $("#result-block").show("slow");
+            }
             console.log("Published");
         });
     }
