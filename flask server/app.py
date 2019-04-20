@@ -35,9 +35,9 @@ def dropfile():
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
-        f.save(secure_filename("student_data2.csv"))
+        f.save(secure_filename("student_data.csv"))
         #print(request)
-        filedata = pd.read_csv('student_data2.csv')
+        filedata = pd.read_csv('student_data.csv')
         tree = MerkleTree()
         columns = list(filedata.columns)
         certyear = int(0)
@@ -54,7 +54,7 @@ def upload_file():
             json_data = json.dumps(data)
             tree.add(st)
         tree.createTree()
-        Utils.writeToFile("root.txt", Web3.toHex(tree.getMerkleRoot().value))
+        Utils.writeToFile(certyear, "root.txt", Web3.toHex(tree.getMerkleRoot().value))
         # generate the certificate json with hash and merklepath in header
         # and data in certificate
         for i in range(len(filedata)):
@@ -71,7 +71,7 @@ def upload_file():
                 certificateData[columns[j]] = str(filedata[columns[j]][i])
             data['certificate'] = certificateData
             json_data = json.dumps(data)
-            Utils.writeToFile(certificateData['ID'] + ".txt", json_data)
+            Utils.writeToFile(certyear, certificateData['ID'] + ".txt", json_data)
         return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = certyear)
     else:
         return "<image src='static/not_found.png' style='width:100%; height:100%;'/>"
