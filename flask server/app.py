@@ -50,7 +50,6 @@ def upload_file():
                 s = filedata[columns[j]][i]
                 data[columns[j]] = str(s)
                 st = st + str(s)
-            #print(st)
             json_data = json.dumps(data)
             tree.add(st)
         tree.createTree()
@@ -75,14 +74,6 @@ def upload_file():
         return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = certyear)
     else:
         return "<image src='static/not_found.png' style='width:100%; height:100%;'/>"
-
-@app.route("/upload")
-def upload():
-    return render_template("upload.html")
-
-@app.route('/filereader')
-def filereader():
-    return render_template('filereader.html')
 
 @app.route('/verify')
 def verifyCerti():
@@ -117,11 +108,6 @@ def encrypthash():
     data['value'] = str(y)
     json_data = json.dumps(data)
     return json_data
-
-@app.route("/data")
-def data():
-    read_csv()
-    return "Working"
 
 @app.route('/getsha3hash')
 def getsha3():
