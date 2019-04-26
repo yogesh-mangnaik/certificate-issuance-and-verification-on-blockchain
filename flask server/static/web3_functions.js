@@ -28,8 +28,8 @@ function publishRoot(hash, year, txhashcallback, callback){
 		}
 	});
 	}
-	catch(excp){
-		callback(false,excp);
+	catch(exception){
+		callback(false,exception);
 		return;
 	}
 	var publishingEvent = publishingContract.PublishStatus({}, {fromBlock: 0, toBlock: 'latest'});
@@ -51,14 +51,6 @@ function publishRoot(hash, year, txhashcallback, callback){
 }
 
 function verifyCertificate(merklePath, hash, year, timestamp,callback, requestCallback, resultCallback){
-	// console.log("Verifying");
-	// setTimeout(function(){
-	// 	requestCallback("123456678");
-	// }, 5000);
-	// setTimeout(function(){
-	// 	resultCallback(true);
-	// }, 10000);
-	// return;
 	timestampHash = timestamp;
 	verificationContract.verify(merklePath, hash, year, timestamp, function(error, result){
 		if(!error){
