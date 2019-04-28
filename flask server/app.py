@@ -27,6 +27,10 @@ def allowed_file(filename):
 def published():
     return render_template('publishedroots.html')
 
+@app.route('/previousrequests')
+def previousrequests():
+    return render_template('previousrequests.html')
+
 @app.route('/requeststatus')
 def dropfile():
     return render_template('requeststatus.html')
@@ -70,7 +74,7 @@ def upload_file():
                 certificateData[columns[j]] = str(filedata[columns[j]][i])
             data['certificate'] = certificateData
             json_data = json.dumps(data)
-            Utils.writeToFile(certyear, certificateData['ID'] + ".txt", json_data)
+            Utils.writeToFile(certyear, certificateData['ID'] + ".json", json_data)
         return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = certyear)
     else:
         return "<image src='static/not_found.png' style='width:100%; height:100%;'/>"

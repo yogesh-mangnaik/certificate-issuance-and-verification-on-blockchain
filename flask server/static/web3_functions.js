@@ -14,6 +14,8 @@ var publishingContract = publishingContractInstance.at(publishingContractAddress
 var verificationContractInstance = web3.eth.contract(verificationContractAbi);
 var verificationContract = verificationContractInstance.at(verificationContractAddress);
 
+var x = 0;
+
 function publishRoot(hash, year, txhashcallback, callback){
 	// console.log("Publishing Hash"); //TESTING CODE
 	// setTimeout(function() {
@@ -124,4 +126,26 @@ function getPublishedRoot(year, callback){
 			console.log("Error occured while getting root of year : " + year);
 		}
 	})
+}
+
+var set = new Map();
+function getPreviousRequests(callback){
+	var verificationStatusEvent = verificationContract.VerificationResult({}, {fromBlock: 0, toBlock: 'latest'});
+	verificationStatusEvent.watch(function(error, result){
+		if(!error){
+			var x = result.args['requestID'];
+			var y = String(x);
+			var a = result.args['verificationStatus'];
+			var b = String(a);
+			if(!set.has(y)){
+				set.set(y, b);
+				console.log(y);
+				console.log(b);
+				callback(y,b);
+				//console.log(typeof result.args['request']);
+				//console.log(result.args['verificationStatus']);
+				//console.log(set.size());
+			}
+		}
+	});
 }

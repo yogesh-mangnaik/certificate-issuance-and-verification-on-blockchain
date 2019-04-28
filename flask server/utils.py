@@ -9,9 +9,7 @@ from werkzeug import secure_filename
 from web3 import Web3
 
 from merkle_tree import MerkleTree
-
 class Utils(object):
-
 
 	@classmethod
 	def writeToFile(self, year, filename, data):
