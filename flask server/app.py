@@ -32,7 +32,7 @@ def previousrequests():
     return render_template('previousrequests.html')
 
 @app.route('/requeststatus')
-def dropfile():
+def requestStatus():
     return render_template('requeststatus.html')
 
 @app.route('/uploadfile', methods=['GET', 'POST'])
@@ -87,7 +87,7 @@ def verifyCerti():
 def publish():
     return render_template("uploadcsv.html")
 
-@app.route('/index')
+@app.route('/')
 def index():
     return render_template("index.html")
 
@@ -96,7 +96,6 @@ def hash():
     normalhash = request.args.get('hash')
     privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
     x = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [normalhash, privateKey]))
-    #y = Web3.toHex(Web3.soliditySha3(['bytes32'], [x]))
     data = {}
     data['value'] = str(x)
     json_data = json.dumps(data)
@@ -122,4 +121,4 @@ def getsha3():
     #return Web3.toHex(Web3.soliditySha3(['string'], [certi]))
 
 if __name__ == "__main__":
-    app.run(debug=True, port=80, threaded=True)
+    app.run(debug=True, port=8192, threaded=True, host='0.0.0.0')

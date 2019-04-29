@@ -13,7 +13,7 @@ class Utils(object):
 
 	@classmethod
 	def writeToFile(self, year, filename, data):
-		savePath = 'C:/Yogesh/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
+		savePath = '/home/yogeshmangnaik2012/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
 		directory = savePath + str(year)
 		if not os.path.exists(directory):
 			os.makedirs(directory)
