@@ -17,6 +17,7 @@ from werkzeug import secure_filename
 from utils import Utils
 import pyqrcode
 
+import smartcontracts
 from merkle_tree import MerkleTree
 from merkle_tree import TreeNode
 
