@@ -1,5 +1,5 @@
-var verificationContractAddress = '0x7cac8d783836167f1bcfbf1900c760b5ed1274db';
-var publishingContractAddress   = '0x27c2f28a313c84da70b6a0d22f2a4ee4e8968c06';
+var verificationContractAddress = '0x302bd305eb7f9f4b879c86a9520126a32e9334f5';
+var publishingContractAddress   = '0x2DF01295DF6D9fecC20bE38219ecFF65D2aef245';
 
 var verificationContractAbi = [
 	{
@@ -268,6 +268,25 @@ var verificationContractAbi = [
 			{
 				"name": "",
 				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "validRequests",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"payable": false,
