@@ -9,10 +9,10 @@ class Utils(object):
 	@classmethod
 	def initialize(self):
 		sys = platform.system()
+		print(sys)
 		if(sys == "Linux"):
 			Utils.savePath = '/home/yogeshmangnaik2012/Test_Server/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
 		if sys == 'Windows':
-			print("Windows")
 			Utils.savePath = 'C:/Users/yoges/Desktop/Final Year Project/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
 
 	@classmethod
