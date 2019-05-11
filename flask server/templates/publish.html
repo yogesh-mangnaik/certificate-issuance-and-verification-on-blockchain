@@ -41,6 +41,12 @@
                         <div class="alert alert-secondary"> <h5 class="card-title">Year : {{year}}</h5>
                         </div>
                         <button class="btn btn-primary pubhlish-csv" onclick="publish();">Publish</a>
+                        <br>
+                        <div>
+                            
+                        <button class="btn btn-primary pubhlish-csv" onclick="download();">Download</a>
+                        </div>
+                        </div>
                         </div>
                         <div id="loading-block" style="display:none">
                                 <div class="alert alert-success">Waiting for Transaction ..</div>
@@ -64,6 +70,10 @@
 </main>
 <script type="text/javascript">
     var x = {{roothash}};
+
+    function download(){
+        window.open("http://35.244.31.45:8192/filedownload/"+"{{downloadpath}}");
+    }
     function publish(){
 
         console.log("Publishing");
