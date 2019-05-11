@@ -110,7 +110,7 @@ def hash():
     normalhash = request.args.get('hash')
     checkhash = Web3.toHex(Web3.soliditySha3(['string'], [normalhash]))
     print("Checking")
-    isValid = (verifyContract.functions.validRequests(checkhash).call())
+    isValid = (smartcontracts.verifyContract.functions.validRequests(checkhash).call())
     print("Status : " + str(isValid))
     privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
     x = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [normalhash, privateKey]))
