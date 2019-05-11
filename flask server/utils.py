@@ -1,25 +1,34 @@
-from flask import Flask, render_template
-from flask import request
-import hashlib
-import json
-import csv
-import pandas as pd
+import shutil
 import os
-from werkzeug import secure_filename
-from web3 import Web3
+import platform
 
-from merkle_tree import MerkleTree
 class Utils(object):
+
+	savePath = ""
+
+	@classmethod
+	def initialize(self):
+		sys = platform.system()
+		if(sys == "Linux"):
+			Utils.savePath = '/home'
+		if sys == 'Windows':
+			print("Windows")
+			Utils.savePath = 'C:/Users/yoges/Desktop/Final Year Project/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
 
 	@classmethod
 	def writeToFile(self, year, filename, data):
-		savePath = '/home/yogeshmangnaik2012/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
-		directory = savePath + str(year)
+		directory = Utils.savePath + str(year)
 		if not os.path.exists(directory):
 			os.makedirs(directory)
 		filepath = directory + '/' + str(filename)
 		file = open(filepath, "w")
 		file.write(data)
 		file.close()
+
+	@classmethod
+	def createZip(self, path):
+		shutil.make_archive(Utils.savePath + path, 'zip', Utils.savePath + path)
+		shutil.rmtree(Utils.savePath+path)
+		return path+".zip"
 
 	

@@ -1,14 +1,20 @@
 from flask import Flask, render_template
+from flask import abort
+from flask import send_from_directory
+import flask
 from flask import request
+from flask import send_file
+from datetime import datetime
+from zipfile import ZipFile 
 import hashlib
 import json
 import csv
 import pandas as pd
 import os
+import platform
+from web3 import Web3, HTTPProvider
 from werkzeug import secure_filename
-from web3 import Web3
 from utils import Utils
-from urllib.parse import unquote
 import pyqrcode
 
 from merkle_tree import MerkleTree
@@ -35,9 +41,14 @@ def previousrequests():
 def requestStatus():
     return render_template('requeststatus.html')
 
+@app.route('/filedownload/<string:name>')
+def filedownload(name):
+    return send_from_directory(Utils.savePath, name, as_attachment=True)
+
 @app.route('/uploadfile', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
+        time = str(int(datetime.now().timestamp())) 
         f = request.files['file']
         f.save(secure_filename("student_data.csv"))
         #print(request)
@@ -49,7 +60,6 @@ def upload_file():
             st = ""
             data = {}
             certyear = int(str(filedata['Year'][i]))
-            print(certyear)
             for j in range(len(columns)):
                 s = filedata[columns[j]][i]
                 data[columns[j]] = str(s)
@@ -57,7 +67,8 @@ def upload_file():
             json_data = json.dumps(data)
             tree.add(st)
         tree.createTree()
-        Utils.writeToFile(certyear, "root.txt", Web3.toHex(tree.getMerkleRoot().value))
+        directory = "Year" + str(certyear) +"-" + time
+        Utils.writeToFile(directory, "root.txt", Web3.toHex(tree.getMerkleRoot().value))
         # generate the certificate json with hash and merklepath in header
         # and data in certificate
         for i in range(len(filedata)):
@@ -74,10 +85,12 @@ def upload_file():
                 certificateData[columns[j]] = str(filedata[columns[j]][i])
             data['certificate'] = certificateData
             json_data = json.dumps(data)
-            Utils.writeToFile(certyear, certificateData['ID'] + ".json", json_data)
-        return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = certyear)
+            Utils.writeToFile(directory, certificateData['ID'] + ".json", json_data)
+        z = Utils.createZip(directory)
+        print("Created file : " + z)
+        return render_template('publish.html', roothash = Web3.toHex(tree.getMerkleRoot().value), year = certyear, downloadpath = z)
     else:
-        return "<image src='static/not_found.png' style='width:100%; height:100%;'/>"
+        abort(404)
 
 @app.route('/verify')
 def verifyCerti():
@@ -121,4 +134,5 @@ def getsha3():
     #return Web3.toHex(Web3.soliditySha3(['string'], [certi]))
 
 if __name__ == "__main__":
+    Utils.initialize()
     app.run(debug=True, port=8192, threaded=True, host='0.0.0.0')
