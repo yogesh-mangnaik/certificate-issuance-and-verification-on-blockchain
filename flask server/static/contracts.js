@@ -1,5 +1,5 @@
-var verificationContractAddress = '0x302bd305eb7f9f4b879c86a9520126a32e9334f5';
-var publishingContractAddress   = '0x2DF01295DF6D9fecC20bE38219ecFF65D2aef245';
+var verificationContractAddress = '0x1f4925241106727a0a07e4853aa85b98f68313a7';
+var publishingContractAddress   = '0x984d763faf3501200f36ff8e8f90862f45b1f945';
 
 var verificationContractAbi = [
 	{
@@ -109,6 +109,10 @@ var verificationContractAbi = [
 		"inputs": [
 			{
 				"name": "contractAddress",
+				"type": "address"
+			},
+			{
+				"name": "tokenAddress",
 				"type": "address"
 			}
 		],

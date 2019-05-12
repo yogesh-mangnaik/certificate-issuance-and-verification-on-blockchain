@@ -112,6 +112,10 @@ verifyContractABI = '''
 			{
 				"name": "contractAddress",
 				"type": "address"
+			},
+			{
+				"name": "tokenAddress",
+				"type": "address"
 			}
 		],
 		"payable": true,
@@ -312,8 +316,6 @@ verifyContractABI = '''
 ]'''
 
 verifyContract = web3.eth.contract(
-	address = Web3.toChecksumAddress('0x302bd305eb7f9f4b879c86a9520126a32e9334f5'),
+	address = Web3.toChecksumAddress('0x1f4925241106727a0a07e4853aa85b98f68313a7'),
 	abi = verifyContractABI
 )
-print("Verify1 Value : ")
-print(verifyContract.functions.verify1().call())

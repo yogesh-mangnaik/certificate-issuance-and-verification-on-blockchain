@@ -28,7 +28,7 @@ class Utils(object):
 	@classmethod
 	def createZip(self, path):
 		shutil.make_archive(Utils.savePath + path, 'zip', Utils.savePath + path)
-		shutil.rmtree(Utils.savePath+path)
+		#shutil.rmtree(Utils.savePath+path)
 		return path+".zip"
 
 	

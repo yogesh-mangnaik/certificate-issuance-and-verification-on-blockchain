@@ -1,22 +1,17 @@
-from flask import Flask, render_template
-from flask import abort
-from flask import send_from_directory
-import flask
-from flask import request
-from flask import send_file
+from flask import Flask, render_template, abort, send_from_directory, request
 from datetime import datetime
 from zipfile import ZipFile 
 import hashlib
 import json
-import csv
 import pandas as pd
 import os
 import platform
 from web3 import Web3, HTTPProvider
 from werkzeug import secure_filename
-from utils import Utils
 import pyqrcode
+import png
 
+from utils import Utils
 import smartcontracts
 from merkle_tree import MerkleTree
 from merkle_tree import TreeNode
@@ -25,10 +20,6 @@ ALLOWED_EXTENSIONS = set(['csv'])
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/publishedroots')
 def published():
@@ -86,6 +77,8 @@ def upload_file():
                 certificateData[columns[j]] = str(filedata[columns[j]][i])
             data['certificate'] = certificateData
             json_data = json.dumps(data)
+            qr = pyqrcode.create(str(json_data))
+            qr.png(Utils.savePath + directory+"/"+certificateData['ID']+'.png', scale=5) 
             Utils.writeToFile(directory, certificateData['ID'] + ".json", json_data)
         z = Utils.createZip(directory)
         print("Created file : " + z)
@@ -117,17 +110,6 @@ def hash():
     x = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [normalhash, privateKey]))
     data = {}
     data['value'] = str(x)
-    json_data = json.dumps(data)
-    return json_data
-
-@app.route("/equery")
-def encrypthash():
-    normalhash = request.args.get('hash')
-    privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
-    x = Web3.toHex(Web3.soliditySha3(['bytes32', 'bytes32'], [normalhash, privateKey]))
-    y = Web3.toHex(Web3.soliditySha3(['string'], [x]))
-    data = {}
-    data['value'] = str(y)
     json_data = json.dumps(data)
     return json_data
 
