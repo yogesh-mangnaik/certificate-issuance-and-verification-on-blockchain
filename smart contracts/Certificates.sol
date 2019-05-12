@@ -6,7 +6,7 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.25.sol";
 
 contract Certificates is usingOraclize {
     
-    //test variables
+    //test variablespip3 int
     bytes32 public lastid;
     bytes32 public calculatedHash;
     uint256 public verify1 = 0;
@@ -14,7 +14,9 @@ contract Certificates is usingOraclize {
     //mapping (uint256 => bytes32) public certificates;
     mapping (bytes32 => bytes32[]) requestPath;
     mapping (bytes32 => uint256) requestYear;
+    mapping (bytes32 => bytes32) requestKey;
     mapping (bytes32 => bool) public previousRequests;
+    mapping (bytes32 => bool) public validRequests;
     
     address owner;
     CertificatePublishing public certificatesRootContract;
@@ -23,6 +25,10 @@ contract Certificates is usingOraclize {
     event LogNewOraclizeQuery(string description);
     event VerificationResult(bytes32 requestID, bool verificationStatus);
     event VerificationRequest(bytes32 requestID, string requestedHash, address requestSender, uint256 timeStamp, bool status);
+    event GetRequestStatus(bytes32 requestID, bool status, uint256 timestamp);
+    
+    mapping (bytes32 => uint) requestState;
+    uint state = 0;
     
     /*To be used to set accessiblity of function so that
       only the deployer of the contract can call it*/
@@ -31,23 +37,39 @@ contract Certificates is usingOraclize {
         _;
     }
     
-    constructor(CertificatePublishing contractAddress) public payable{
+    constructor(CertificatePublishing contractAddress, MyToken tokenAddress) public payable{
         owner = msg.sender;
         certificatesRootContract = contractAddress;
+        tokenContract = tokenAddress;
         //tokenContract = token;
+    }
+    
+    function getStatus(bytes32 requestId, uint256 timestamp) public returns(bool){
+        if(previousRequests[requestId]){
+            emit GetRequestStatus(requestId, true, timestamp);
+        }
+        else{
+            emit GetRequestStatus(requestId, false, timestamp);
+        }
     }
     
     function verify(bytes32[] memory merklepath, string hash, uint256 year, uint256 timestamp) public returns (bytes32){
         if (oraclize_getPrice("URL") > address(this).balance) {
             emit LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
-            emit VerificationRequest(0x0, "", msg.sender, timestamp, false);
-            
-        } else {
+            emit VerificationRequest(0x0, hash, msg.sender, timestamp, false);
+        }
+        else {
+            require(tokenContract.balanceOf(msg.sender) >= 30 * 10**uint256(18));
+            tokenContract.acceptFee(msg.sender, 30);
             emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            string memory url = strConcat("json(http://0343e691.ngrok.io/query?hash=", hash, ").value");
+            string memory url = strConcat("json(http://35.244.31.45:8192/query?hash=", hash,").value");
             bytes32 id = oraclize_query("URL", url);
             lastid = id;
             requestYear[id] = year;
+            bytes32 key = keccak256(hash);
+            validRequests[key] = true;
+            requestKey[id] = key;
+            requestState[id] = state;
             for(uint256 i=0; i<merklepath.length; i++){
                 requestPath[id].push(merklepath[i]);
             }
@@ -77,6 +99,7 @@ contract Certificates is usingOraclize {
             emit VerificationResult(myid, false);
             previousRequests[myid] = false;
         }
+        validRequests[requestKey[myid]] = false;
     }
     
     /*Verifies if provided leaf and merkle path are valid with respect to provided root*/

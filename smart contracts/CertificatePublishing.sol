@@ -6,6 +6,8 @@ contract CertificatePublishing{
     
     event PublishStatus(bytes32 root, uint256 year);
     
+    uint public x = 0;
+    
     address owner;
     
     /*To be used to set accessiblity of function so that
@@ -23,6 +25,10 @@ contract CertificatePublishing{
         if(certificateRoots[year] == 0x0){
             certificateRoots[year] = root;
             emit PublishStatus(root, year);
+            x = 1;
+        }
+        else{
+            x = 2;
         }
     }
     

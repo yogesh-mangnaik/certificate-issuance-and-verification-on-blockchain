@@ -1,7 +1,7 @@
 pragma solidity >=0.4.22 <0.6.0;
 
 interface tokenRecipient { 
-    function receiveApproval(address _from, uint256 _value, address _token, bytes calldata _extraData) external; 
+    function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; 
 }
 
 contract MyToken {
@@ -12,6 +12,8 @@ contract MyToken {
     address public owner;
     // 18 decimals is the strongly suggested default, avoid changing it
     uint256 public totalSupply;
+    
+    address public certificateContract;
 
     // This creates an array with all balances
     mapping (address => uint256) public balanceOf;
@@ -33,16 +35,24 @@ contract MyToken {
      *
      * Initializes contract with initial supply tokens to the creator of the contract
      */
-    constructor(
-        uint256 initialSupply,
-        string memory tokenName,
-        string memory tokenSymbol
-    ) public {
-        totalSupply = initialSupply * 10 ** uint256(decimals);  // Update total supply with the decimal amount
+    constructor() public {
+        totalSupply = 1000000 * 10 ** uint256(decimals);  // Update total supply with the decimal amount
         balanceOf[msg.sender] = totalSupply;                    // Give the creator all initial tokens
-        name = tokenName;                                       // Set the name for display purposes
-        symbol = tokenSymbol;                                   // Set the symbol for display purposes
+        name = "VJTI Token";                                       // Set the name for display purposes
+        symbol = "VJTI";                                   // Set the symbol for display purposes
         owner = msg.sender;
+    }
+    
+    
+    function acceptFee(address _from, uint256 _amount) public {
+        _amount = _amount * 10 ** uint256(decimals);
+        require(msg.sender == certificateContract);
+        require(balanceOf[_from] >= _amount);
+        balanceOf[_from] -= _amount;
+    }
+    
+    function setCertificateAddress(address certiAddress) public{
+        certificateContract = certiAddress;
     }
 
     /**
@@ -64,14 +74,6 @@ contract MyToken {
         emit Transfer(_from, _to, _value);
         // Asserts are used to use static analysis to find bugs in your code. They should never fail
         assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
-    }
-    
-    function tran(address _to) public{
-        require(_to != address(0x0));
-        
-        require(balanceOf[msg.sender] >= 30);
-        
-        balanceOf[msg.sender] -= 30;
     }
     
     /**
@@ -152,21 +154,4 @@ contract MyToken {
         return true;
     }
 
-    /**
-     * Destroy tokens from other account
-     *
-     * Remove `_value` tokens from the system irreversibly on behalf of `_from`.
-     *
-     * @param _from the address of the sender
-     * @param _value the amount of money to burn
-     */
-    function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
-        require(_value <= allowance[_from][msg.sender]);    // Check allowance
-        balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
-        totalSupply -= _value;                              // Update totalSupply
-        emit Burn(_from, _value);
-        return true;
-    }
 }
