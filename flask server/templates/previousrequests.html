@@ -27,11 +27,21 @@
         for(var i = 2000; i<2100; i++){
             getPreviousRequests(function(requestID, status){
                 var x = document.getElementById('roots-data');
-                x.innerHTML += '<div id="hash-block">'+
-                                        '<div id="request-id" class="alert alert-secondary" style="width: 100%;">'+
-                                            '<b>Request ID : </b>' + requestID +' <br><b>Verification Status</b> :  ' + status +  
-                                        '</div>'+
-                                    '</div>';
+                if(status == "true"){
+                    x.innerHTML += '<div id="hash-block">'+
+                                            '<div id="request-id" class="alert alert-success" style="width: 100%;">'+
+                                                '<b>Request ID : </b>' + requestID +' <br><b>Verification Status</b> :  ' + status +  
+                                            '</div>'+
+                                        '</div>';
+                }
+                else{
+                    x.innerHTML += '<div id="hash-block">'+
+                                            '<div id="request-id" class="alert alert-danger" style="width: 100%;">'+
+                                                '<b>Request ID : </b>' + requestID +' <br><b>Verification Status</b> :  ' + status +  
+                                            '</div>'+
+                                        '</div>';
+                    
+                }
             })
         }
     });
