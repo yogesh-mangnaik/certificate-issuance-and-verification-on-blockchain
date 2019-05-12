@@ -103,7 +103,7 @@ def hash():
     normalhash = request.args.get('hash')
     checkhash = Web3.toHex(Web3.soliditySha3(['string'], [normalhash]))
     isValid = (smartcontracts.verifyContract.functions.validRequests(checkhash).call())
-    if not valid:
+    if not isValid:
         print("The query request did not come from our smart contract")
         abort(403)
     privateKey = "0x0bc9b5bf5d3a57829de9c2cc9d82ff3a21b0c6be4f33d9ac19a1807a6f8ef189"
