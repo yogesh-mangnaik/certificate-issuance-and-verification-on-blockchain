@@ -210,8 +210,6 @@
     </div>
     <script type="text/javascript">
         function verify(){
-            $("#hash-block").hide("fast");
-            $("#loading-block").show("fast");
             try{
                 var obj = JSON.parse(jsondata);
             }
@@ -219,6 +217,8 @@
                 console.log("Error Occured");
                 return;
             }
+            $("#hash-block").hide("fast");
+            $("#loading-block").show("fast");
             var hash = obj.header.hash;
             var merklePath = obj.header.merkleproof;
             var year = obj.certificate.Year;
