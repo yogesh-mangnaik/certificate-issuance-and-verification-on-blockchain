@@ -11,7 +11,7 @@ class Utils(object):
 		sys = platform.system()
 		print(sys)
 		if(sys == "Linux"):
-			Utils.savePath = '/home/yogeshmangnaik2012/Test_Server/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
+			Utils.savePath = '/home/yogeshmangnaik2012/Server/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
 		if sys == 'Windows':
 			Utils.savePath = 'C:/Users/yoges/Desktop/Final Year Project/Certificate_Issuance_And_Verification_On_Blockchain/certificates/'
 
