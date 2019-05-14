@@ -316,6 +316,6 @@ verifyContractABI = '''
 ]'''
 
 verifyContract = web3.eth.contract(
-	address = Web3.toChecksumAddress('0x1f4925241106727a0a07e4853aa85b98f68313a7'),
+	address = Web3.toChecksumAddress('0x02c19dedf9472c8627a682a06b533c13ade3a13f'),
 	abi = verifyContractABI
 )
