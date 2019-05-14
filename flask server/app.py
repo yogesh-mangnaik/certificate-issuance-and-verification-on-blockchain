@@ -77,8 +77,8 @@ def upload_file():
                 certificateData[columns[j]] = str(filedata[columns[j]][i])
             data['certificate'] = certificateData
             json_data = json.dumps(data)
-            qr = pyqrcode.create(str(json_data))
-            qr.png(Utils.savePath + directory+"/"+certificateData['ID']+'.png', scale=5) 
+            #qr = pyqrcode.create(str(json_data))
+            #qr.png(Utils.savePath + directory+"/"+certificateData['ID']+'.png', scale=5) 
             Utils.writeToFile(directory, certificateData['ID'] + ".json", json_data)
         z = Utils.createZip(directory)
         print("Created file : " + z)
