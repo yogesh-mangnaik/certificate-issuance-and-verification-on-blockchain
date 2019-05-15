@@ -209,6 +209,7 @@
         </div>
     </div>
     <script type="text/javascript">
+        var changed = false;
         function verify(){
             try{
                 var obj = JSON.parse(jsondata);
@@ -255,32 +256,37 @@
                     $("#reqidalert").html('<h5>Request ID</h5>'+reqID);
                     $("#reqidalert").show("fast");
                 }, function(result){
-                    if(result){
-                        var reshtml = '<div class="success-checkmark">\
-                        <div class="check-icon">\
-                        <span class="icon-line line-tip"></span>\
-                        <span class="icon-line line-long"></span>\
-                        <div class="icon-circle"></div>\
-                        <div class="icon-fix"></div>\
-                        </div></div>\
-                        <div class="alert alert-success">Certificate Successfully Verified<br>The submitted certificate is genuine</div>';
-
-                        $("#pubfailure").hide("fast");
-                        $("#pubsucess").show("slow");
-                        $("#pubsucess").html(reshtml);
-
-                        $("#loading-block").hide("fast");
-                        $("#result-block").show("slow");
+                    if(changed){
+                        console.log("Second Request");
                     }
-                    else{
-                        $("#pubsucess").hide("fast");
-                        $("#pubfailure").show("slow");
-                        $("#pubfailure").html("Oops!!...The certificate is not genuine/is tampered with");
-                        /*$("#pubinfo").html(result);*/
-                        $("#loading-block").hide("fast");
-                        $("#result-block").show("slow");
+                    if(!changed){
+                        changed =true;
+                        if(result){
+                            var reshtml = '<div class="success-checkmark">\
+                            <div class="check-icon">\
+                            <span class="icon-line line-tip"></span>\
+                            <span class="icon-line line-long"></span>\
+                            <div class="icon-circle"></div>\
+                            <div class="icon-fix"></div>\
+                            </div></div>\
+                            <div class="alert alert-success">Certificate Successfully Verified<br>The submitted certificate is genuine</div>';
+    
+                            $("#pubfailure").hide("fast");
+                            $("#pubsucess").show("slow");
+                            $("#pubsucess").html(reshtml);
+    
+                            $("#loading-block").hide("fast");
+                            $("#result-block").show("slow");
+                        }
+                        else{
+                            $("#pubsucess").hide("fast");
+                            $("#pubfailure").show("slow");
+                            $("#pubfailure").html("Oops!!...The certificate is not genuine/is tampered with");
+                            /*$("#pubinfo").html(result);*/
+                            $("#loading-block").hide("fast");
+                            $("#result-block").show("slow");
+                        }
                     }
-
                 });
         }
     </script>
