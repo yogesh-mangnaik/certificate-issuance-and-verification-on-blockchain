@@ -1,5 +1,5 @@
-var verificationContractAddress = '0xe0b624170ec7417e6bd2cdadd27c0cc7d42e24b1';
-var publishingContractAddress   = '0x86767aa19a450ad81713738efccecf9a09d496d1';
+var verificationContractAddress = '0x09568d8439c1d49624305dfe593547965c83c56f';
+var publishingContractAddress   = '0x2ec908146fa2289c5ece3fc68a8711719794250b';
 
 var verificationContractAbi = [
 	{
